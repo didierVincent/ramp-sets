@@ -1,20 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import { OneRMProvider } from './context/OneRMContext';
+
+import TwoSetsScreen from './screens/TwoSetsScreen/TwoSetsScreen';
+import ThreeSetsScreen from './screens/ThreeSetsScreen/ThreeSetsScreen';
+import FourSetsScreen from './screens/FourSetsScreen/FourSetsScreen';
+import OneRMCalculator from './screens/OneRMCalc/OneRMCalc';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <OneRMProvider>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="1RM Calc" component={OneRMCalculator} />
+        <Tab.Screen name="2 Sets" component={TwoSetsScreen} />
+        <Tab.Screen name="3 Sets" component={ThreeSetsScreen} />
+        <Tab.Screen name="4 Sets" component={FourSetsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+    </OneRMProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

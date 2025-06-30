@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "RIR-Ramp-App",
-    "slug": "RIR-Ramp-App",
-    "version": "1.0.0",
+    "name": "Ramp Sets",
+    "slug": "Ramp-Sets",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,7 +13,12 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.didiervincent.rir-ramp-app",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -24,6 +29,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7b595b34-55d7-4b25-8b97-1703cebcbee6"
+      }
+    },
+    "owner": "didiervincent"
   }
 }

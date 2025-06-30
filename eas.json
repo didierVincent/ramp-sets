@@ -1,0 +1,10 @@
+{
+  "build": {
+    "adhoc": {
+      "ios": {
+        "distribution": "internal",
+        "enterpriseProvisioning": "adhoc"
+      }
+    }
+  }
+}
