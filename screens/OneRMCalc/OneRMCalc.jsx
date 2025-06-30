@@ -19,18 +19,23 @@ export default function OneRMCalculator() {
   const { setGlobalOneRM } = useContext(OneRMContext);
 
   
-  useEffect(() => {
-    const w = parseFloat(weight);
-    const r = parseInt(reps);
-    if (w > 0 && r > 0) {
-      const oneRM = w * (1 + r / 30);
-      const oneRMString = oneRM.toFixed(1);
-      setResult(oneRM.toFixed(1));
-      setGlobalOneRM(oneRMString);
-    } else {
-      setResult('0');
+ useEffect(() => {
+  const w = parseFloat(weight);
+  const r = parseInt(reps);
+  if (w > 0 && r > 0) {
+    let oneRM = w;
+
+    if (r !== 1) {
+      oneRM = w * (1 + r / 30); // Epley formula
     }
-  }, [weight, reps]);
+
+    const oneRMString = oneRM.toFixed(1);
+    setResult(oneRMString);
+    setGlobalOneRM(oneRMString);
+  } else {
+    setResult('0');
+  }
+}, [weight, reps]);
 
   const clearInputs = () => {
     setWeight('');
