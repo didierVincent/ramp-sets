@@ -34,12 +34,12 @@ export default function SetTable({ data }) {
 
 const styles = StyleSheet.create({
   table: {
-    marginTop: 24,
+    marginTop: 16,
     paddingHorizontal: 12,
   },
   headerRow: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 3,
     borderBottomWidth: 1,
     borderColor: '#ccc',
     paddingBottom: 4,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   dataRow: {
     flexDirection: 'row',
     marginTop: 5,
-    marginBottom: 10,
+    marginBottom: 5,
     paddingVertical: 2,
   },
   cellHeader: {

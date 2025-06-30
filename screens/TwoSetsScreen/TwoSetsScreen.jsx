@@ -75,6 +75,7 @@ export default function TwoSetsScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
+      <View style={styles.main}>
       <Text style={styles.title}>Ramp Sets</Text>
   <Text style={styles.description}> {/* Add your description here */}
     RIR: 2 → 0 {'\n'}
@@ -90,7 +91,12 @@ export default function TwoSetsScreen() {
         placeholder="1 Rep Max (kg)"
       />
       <SetTable data={data} />
-      <View style={styles.toggleRow}>
+
+      </View>
+      
+      
+      <View style={styles.footer}>
+        <View style={styles.toggleRow}>
         <Text>Round down to nearest 2.5 kg</Text>
         <Switch value={roundTo2_5} onValueChange={onToggle2_5} />
       </View>
@@ -98,9 +104,7 @@ export default function TwoSetsScreen() {
         <Text>Round down to nearest 5.0 kg</Text>
         <Switch value={roundTo5} onValueChange={onToggle5} />
       </View>
-      
         <View style={styles.divider} />
-      <View style={styles.footer}>
       <Text style={styles.subtitle}>
         
   Why choose 2 sets? {/* You can customize this per screen */}
@@ -115,7 +119,7 @@ export default function TwoSetsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { flex: 1, padding: 20, justifyContent: 'space-between' },
   label: { fontSize: 18 },
   input: { borderWidth: 1, padding: 10, fontSize: 18, marginTop: 10 },
   toggleRow: {
@@ -124,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 5,
-    gap: "15",
+    gap: "5",
   },
   title: {
   fontSize: 24,
@@ -140,27 +144,19 @@ description: {
   paddingHorizontal: 10,
 },
 divider: {
-    position: 'absolute',
-    bottom: 170,
-    left: 20,
-    right: 0,
-    alignItems: 'center',       // center horizontally
+    alignItems: 'center', // center horizontally
     width: '100%',
     height: 1,
     backgroundColor: '#ccc',
+    marginBottom: 10,
 },
 footer: {
-  position: 'absolute',
-  bottom: 40,
-  left: 0,
-  right: 0,
-  alignItems: 'center',       // center horizontally
-  paddingHorizontal: 20,
+  paddingHorizontal: 2,
+  marginBottom: 10,
 },
 subtitle: {
   fontSize: 18,
   fontWeight: '600',
-  marginTop: 100,
   marginBottom: 4,
   textAlign: 'center',
 },
@@ -169,7 +165,6 @@ subdescription: {
   color: '#666',
   textAlign: 'center',
   paddingHorizontal: 10,
-  marginBottom: 20,
+  marginBottom: 10,
 }, 
-
 });
