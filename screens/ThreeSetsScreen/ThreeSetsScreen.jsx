@@ -5,16 +5,19 @@ import { OneRMContext } from '../../context/OneRMContext';
 
 export default function ThreeSetsScreen() {
 
-  const { globalOneRM } = useContext(OneRMContext)
 
-  const [oneRM, setOneRM] = useState('');
+  
 
   const {
-  roundTo2_5,
-  setRoundTo2_5,
-  roundTo5,
-  setRoundTo5
-} = useContext(OneRMContext);
+    globalOneRM,
+    setGlobalOneRM,
+    roundTo2_5,
+    setRoundTo2_5,
+    roundTo5,
+    setRoundTo5
+  } = useContext(OneRMContext);
+
+  const [oneRM, setOneRM] = useState('');
 
     useEffect(() => {
     if (
@@ -23,6 +26,11 @@ export default function ThreeSetsScreen() {
       setOneRM(globalOneRM);
     }
   }, [globalOneRM]);
+
+  const handleChangeOneRM = (value) => {
+    setOneRM(value);
+    setGlobalOneRM(value);
+  };
 
   const onToggle2_5 = (value) => {
     setRoundTo2_5(value);
@@ -94,7 +102,7 @@ export default function ThreeSetsScreen() {
         style={styles.input}
         keyboardType="numeric"
         value={oneRM}
-        onChangeText={setOneRM}
+        onChangeText={handleChangeOneRM}
         placeholder="1 Rep Max (kg)"
       />
       <SetTable data={data} />
