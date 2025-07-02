@@ -14,10 +14,16 @@ export default function ThreeSetsScreen() {
     roundTo2_5,
     setRoundTo2_5,
     roundTo5,
-    setRoundTo5
+    setRoundTo5,
+    useBodyweightMode,
+    setUseBodyweightMode,
+    bodyweight,
+    setBodyweight,
+
   } = useContext(OneRMContext);
 
   const [oneRM, setOneRM] = useState('');
+
 
     useEffect(() => {
     if (
@@ -26,6 +32,12 @@ export default function ThreeSetsScreen() {
       setOneRM(globalOneRM);
     }
   }, [globalOneRM]);
+
+  const onToggleBW = (value) => {
+    setUseBodyweightMode(!useBodyweightMode)
+    setRoundTo2_5(false)
+    setRoundTo5(false)
+  }
 
   const handleChangeOneRM = (value) => {
     setOneRM(value);
@@ -105,19 +117,41 @@ export default function ThreeSetsScreen() {
         onChangeText={handleChangeOneRM}
         placeholder="1 Rep Max (kg)"
       />
-      <SetTable data={data} />
+      <SetTable
+        data={data}
+        bodyweight={useBodyweightMode ? parseFloat(bodyweight) : null}
+      />
 
       </View>
       
       <View style={styles.footer}>
-      <View style={styles.toggleRow}>
-        <Text>Round down to nearest 2.5 kg</Text>
-        <Switch value={roundTo2_5} onValueChange={onToggle2_5} />
-      </View>
-      <View style={styles.toggleRow}>
-        <Text>Round down to nearest 5.0 kg</Text>
-        <Switch value={roundTo5} onValueChange={onToggle5} />
-      </View>
+        <View style={styles.toggleRow}>
+          {useBodyweightMode && (
+          <TextInput
+            style={styles.input2}
+            keyboardType="numeric"
+            placeholder="kg"
+            value={bodyweight}
+            onChangeText={setBodyweight}
+          />
+        )}
+          <Text>Use Bodyweight + Load</Text>
+          
+          <Switch value={useBodyweightMode} onValueChange={onToggleBW} />
+        </View>
+      {/* Only show rounding toggles if bodyweight mode is OFF */}
+                {!useBodyweightMode && (
+                  <>
+                    <View style={styles.toggleRow}>
+                      <Text>Round down to nearest 2.5 kg</Text>
+                      <Switch value={roundTo2_5} onValueChange={onToggle2_5} />
+                    </View>
+                    <View style={styles.toggleRow}>
+                      <Text>Round down to nearest 5.0 kg</Text>
+                      <Switch value={roundTo5} onValueChange={onToggle5} />
+                    </View>
+                  </>
+                )}
       <View style={styles.divider} />
       <Text style={styles.subtitle}>
    Why choose 3 sets? {/* You can customize this per screen */}
@@ -135,6 +169,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, justifyContent: 'space-between' },
   label: { fontSize: 18 },
   input: { borderWidth: 1, padding: 10, fontSize: 18, marginTop: 10 },
+  input2: { borderWidth: 1, padding: 5, fontSize: 18, marginTop: 10 },
   toggleRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

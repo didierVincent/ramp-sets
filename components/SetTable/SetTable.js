@@ -1,36 +1,51 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function SetTable({ data }) {
+export default function SetTable({ data, bodyweight }) {
   if (!data || data.length === 0) {
     return <Text style={styles.placeholder}>(use 1RM calc, or enter 1RM above)</Text>;
   }
+
+  const showBodyweight = bodyweight !== null && bodyweight !== '' && !isNaN(bodyweight);
 
   return (
     <View style={styles.table}>
       <View style={styles.headerRow}>
         <Text style={styles.cellHeader}>Set</Text>
-        <Text style={styles.cellHeader}>Load</Text>
+        <Text style={styles.cellHeader}>
+          Load
+        </Text>
         <Text style={styles.cellHeader}>Reps</Text>
         <Text style={styles.cellHeader}>RM</Text>
         <Text style={styles.cellHeader}>RIR</Text>
       </View>
-      {data.map((set, i) => (
-        <View key={i} style={styles.dataRow}>
-          <Text style={styles.cell}>{set.set}</Text>
-          <Text style={styles.cell}>{set.load}kg</Text>
-          <Text style={styles.cell}>x{set.reps}</Text>
-          <Text style={styles.cell}>{set.loadType}</Text>
-          <Text style={styles.cell}>@{set.rir}RIR</Text>
-          
-          
-        </View>
-        
-      ))}
+
+      {data.map((set, i) => {
+        const parsedBW = parseFloat(bodyweight);
+        const parsedTotal = parseFloat(set.load);
+        const extraLoad = (parsedTotal - parsedBW).toFixed(1);
+
+        const totalLoad = showBodyweight && parsedTotal > parsedBW
+          ? `${parsedBW} +${extraLoad} ${parsedTotal}kg`
+          : `${parsedTotal}kg`;
+
+        return (
+          <View key={i} style={styles.dataRow}>
+            <Text style={styles.cell}>{set.set}</Text>
+            <Text style={styles.cell}>{totalLoad}</Text>
+            <Text style={styles.cell}>x{set.reps}</Text>
+            <Text style={styles.cell}>{set.loadType}</Text>
+            <Text style={styles.cell}>@{set.rir}RIR</Text>
+          </View>
+        );
+      })}
+
       <View style={styles.divider} />
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   table: {
