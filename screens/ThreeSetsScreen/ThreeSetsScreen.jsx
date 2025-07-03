@@ -78,7 +78,6 @@ export default function ThreeSetsScreen() {
           <TextInput
             style={styles.input}
             keyboardType="numeric"
-            maxLength={5}
             value={inputValue}
             onChangeText={onChangeText}
             placeholder={`1 Rep Max (${getUnitLabel()})`}
