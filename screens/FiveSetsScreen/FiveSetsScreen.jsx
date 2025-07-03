@@ -12,13 +12,19 @@ import {
 import SetTable from '../../components/SetTable/SetTable';
 import { OneRMContext } from '../../context/OneRMContext';
 
-export default function TwoSetsScreen() {
+export default function FiveSetsScreen() {
   const {
-    setsOneRM, setSetsOneRM,
-    useBodyweightMode, setUseBodyweightMode,
-    bodyweight, setBodyweight,
-    useLbs, getUnitLabel,
-    formatDisplayValue, sanitizeInput, parseToKg,
+    setsOneRM,
+    setSetsOneRM,
+    useBodyweightMode,
+    setUseBodyweightMode,
+    bodyweight,
+    setBodyweight,
+    useLbs,
+    getUnitLabel,
+    formatDisplayValue,
+    sanitizeInput,
+    parseToKg,
     toggleUnits,
   } = useContext(OneRMContext);
 
@@ -36,18 +42,15 @@ export default function TwoSetsScreen() {
 
   // On user input change — sanitize and update canonical kg value immediately
   const onChangeText = (text) => {
-  const clean = sanitizeInput(text);
-  setInputValue(clean);
+    const clean = sanitizeInput(text);
+    setInputValue(clean);
 
-  if (!isValidInputValue(clean)) return;
-
-  const kgVal = parseToKg(clean);
-  if (kgVal !== kgRef.current) {
-    kgRef.current = kgVal;
-    setSetsOneRM(kgVal);
-  }
-};
-
+    const kgVal = parseToKg(clean);
+    if (kgVal !== kgRef.current) {
+      kgRef.current = kgVal;
+      setSetsOneRM(kgVal);
+    }
+  };
 
   // Flip units and update display from current canonical value
   const handleToggleUnit = () => {
@@ -60,11 +63,19 @@ export default function TwoSetsScreen() {
   const getSetData = (kg1RM) => {
     const oneRM = parseFloat(kg1RM);
     if (!oneRM) return [];
-    const tenRM = oneRM / (1 + 10 / 30);
-    const sixRM = oneRM / (1 + 6 / 30);
+
+    const seventeenRM = oneRM / (1 + 17 / 30);
+    const fourteenRM = oneRM / (1 + 14 / 30);
+    const elevenRM = oneRM / (1 + 11 / 30);
+    const eightRM = oneRM / (1 + 8 / 30);
+    const fiveRM = oneRM / (1 + 5 / 30);
+
     return [
-      { set: 1, load: Math.round(tenRM), loadType: '10RM', reps: 8, rir: 2 },
-      { set: 2, load: Math.round(sixRM), loadType: '6RM', reps: 6, rir: 0 },
+      { set: 1, load: Math.round(seventeenRM), loadType: '17RM', reps: 12, rir: 5 },
+      { set: 2, load: Math.round(fourteenRM), loadType: '14RM', reps: 10, rir: 4 },
+      { set: 3, load: Math.round(elevenRM), loadType: '11RM', reps: 8, rir: 3 },
+      { set: 4, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
+      { set: 5, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
     ];
   };
 
@@ -76,7 +87,7 @@ export default function TwoSetsScreen() {
         <View style={styles.main}>
           <Text style={styles.title}>Ramp Sets</Text>
           <Text style={styles.description}>
-            RIR: 2 → 0{'\n'}Reps: 8, 6
+            RIR: 5 → 4 → 3 → 2 → 0{'\n'}Reps: 12, 10, 8, 6, 4
           </Text>
 
           <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>
@@ -118,10 +129,14 @@ export default function TwoSetsScreen() {
           </View>
 
           <View style={styles.divider} />
-          <Text style={styles.subtitle}>Why choose 2 sets?</Text>
-          <Text style={styles.subdescription}>
-            Best for isolation movements, time efficiency, or exercises you’re maintaining. Works well when intensity is high (low RIR), or as accessory volume in a dense program.
-          </Text>
+          {!useBodyweightMode && (
+  <>
+    <Text style={styles.subtitle}>Why choose 5 sets?</Text>
+    <Text style={styles.subdescription}>
+      Ideal for advanced progression and work capacity. Provides volume and intensity to develop strength and endurance. Best for key lifts focused on consistent overload and technique over time.
+    </Text>
+  </>
+)}
         </View>
       </View>
     </TouchableWithoutFeedback>

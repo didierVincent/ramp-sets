@@ -1,166 +1,127 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Keyboard, TouchableWithoutFeedback, View, Text, TextInput, StyleSheet, Switch } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  Keyboard,
+  TouchableWithoutFeedback,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Switch,
+} from 'react-native';
+
 import SetTable from '../../components/SetTable/SetTable';
 import { OneRMContext } from '../../context/OneRMContext';
 
 export default function ThreeSetsScreen() {
-
-
-  
-
   const {
-    globalOneRM,
-    setGlobalOneRM,
-    roundTo2_5,
-    setRoundTo2_5,
-    roundTo5,
-    setRoundTo5,
-    useBodyweightMode,
-    setUseBodyweightMode,
-    bodyweight,
-    setBodyweight,
-
+    setsOneRM, setSetsOneRM,
+    useBodyweightMode, setUseBodyweightMode,
+    bodyweight, setBodyweight,
+    useLbs, getUnitLabel,
+    formatDisplayValue, sanitizeInput, parseToKg, toggleUnits,
   } = useContext(OneRMContext);
 
-  const [oneRM, setOneRM] = useState('');
+  const kgRef = useRef(setsOneRM);
+  const [inputValue, setInputValue] = useState('');
 
-
-    useEffect(() => {
-    if (
-      globalOneRM !== '0' // <-- only update if not '0'
-    ) {
-      setOneRM(globalOneRM);
+  useEffect(() => {
+    kgRef.current = setsOneRM;
+    const displayStr = formatDisplayValue(setsOneRM);
+    if (displayStr !== inputValue) {
+      setInputValue(displayStr);
     }
-  }, [globalOneRM]);
+  }, [setsOneRM, useLbs]);
 
-  const onToggleBW = (value) => {
-    setUseBodyweightMode(!useBodyweightMode)
-    setRoundTo2_5(false)
-    setRoundTo5(false)
-  }
+  const onChangeText = (text) => {
+    const clean = sanitizeInput(text);
+    setInputValue(clean);
 
-  const handleChangeOneRM = (value) => {
-    setOneRM(value);
-    setGlobalOneRM(value);
-  };
-
-  const onToggle2_5 = (value) => {
-    setRoundTo2_5(value);
-    if (value) setRoundTo5(false);
-  };
-
-  const onToggle5 = (value) => {
-    setRoundTo5(value);
-    if (value) setRoundTo2_5(false);
-  };
-
-  const roundLoad = (load) => {
-    if (roundTo5) {
-      return Math.floor(load / 5) * 5;
+    const kgVal = parseToKg(clean);
+    if (kgVal !== kgRef.current) {
+      kgRef.current = kgVal;
+      setSetsOneRM(kgVal);
     }
-    if (roundTo2_5) {
-      return Math.floor(load / 2.5) * 2.5;
-    }
-    return Math.round(load);
   };
 
-  const getSetData = (oneRM) => {
-    const parsed1RM = parseFloat(oneRM);
-    if (!parsed1RM) return [];
+  const handleToggleUnit = () => {
+    toggleUnits();
+    const newDisplay = formatDisplayValue(kgRef.current, !useLbs);
+    setInputValue(newDisplay);
+  };
 
-    const tenRM = parsed1RM / (1 + 10 / 30);
-    const eightRM = parsed1RM / (1 + 8 / 30);
-    const fiveRM = parsed1RM / (1 + 5 / 30);
+  const getSetData = (kg1RM) => {
+    const oneRM = parseFloat(kg1RM);
+    if (!oneRM) return [];
+    const tenRM = oneRM / (1 + 10 / 30);
+    const eightRM = oneRM / (1 + 8 / 30);
+    const fiveRM = oneRM / (1 + 5 / 30);
 
     return [
-      {
-        set: 1,
-        load: roundLoad(tenRM),
-        loadType: '10RM',
-        reps: 7,
-        rir: 3,
-      },
-      {
-        set: 2,
-        load: roundLoad(eightRM),
-        loadType: '8RM',
-        reps: 6,
-        rir: 2,
-      },
-      {
-        set: 3,
-        load: roundLoad(fiveRM),
-        loadType: '5RM',
-        reps: 5,
-        rir: 0,
-      },
+      { set: 1, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
+      { set: 2, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
+      { set: 3, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
     ];
   };
 
-  const data = getSetData(oneRM);
+  const data = getSetData(kgRef.current);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Ramp Sets</Text>
-   <Text style={styles.description}> {/* Add your description here */}
-    RIR: 3 → 2 → 0 {'\n'}
-    Reps: 7, 6, 5
-   </Text>
-   
-      <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={oneRM}
-        onChangeText={handleChangeOneRM}
-        placeholder="1 Rep Max (kg)"
-      />
-      <SetTable
-        data={data}
-        bodyweight={useBodyweightMode ? parseFloat(bodyweight) : null}
-      />
+      <View style={styles.container}>
+        <View style={styles.main}>
+          <Text style={styles.title}>Ramp Sets</Text>
+          <Text style={styles.description}>
+            RIR: 3 → 2 → 0{'\n'}Reps: 7, 6, 5
+          </Text>
 
-      </View>
-      
-      <View style={styles.footer}>
-        <View style={styles.toggleRow}>
-          {useBodyweightMode && (
+          <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>
           <TextInput
-            style={styles.input2}
+            style={styles.input}
             keyboardType="numeric"
-            placeholder="kg"
-            value={bodyweight}
-            onChangeText={setBodyweight}
+            maxLength={5}
+            value={inputValue}
+            onChangeText={onChangeText}
+            placeholder={`1 Rep Max (${getUnitLabel()})`}
           />
-        )}
-          <Text>Use Bodyweight + Load</Text>
-          
-          <Switch value={useBodyweightMode} onValueChange={onToggleBW} />
+
+          <SetTable
+            data={data}
+            bodyweight={useBodyweightMode ? parseFloat(bodyweight) : null}
+          />
         </View>
-      {/* Only show rounding toggles if bodyweight mode is OFF */}
-                {!useBodyweightMode && (
-                  <>
-                    <View style={styles.toggleRow}>
-                      <Text>Round down to nearest 2.5 kg</Text>
-                      <Switch value={roundTo2_5} onValueChange={onToggle2_5} />
-                    </View>
-                    <View style={styles.toggleRow}>
-                      <Text>Round down to nearest 5.0 kg</Text>
-                      <Switch value={roundTo5} onValueChange={onToggle5} />
-                    </View>
-                  </>
-                )}
-      <View style={styles.divider} />
-      <Text style={styles.subtitle}>
-   Why choose 3 sets? {/* You can customize this per screen */}
- </Text>
- <Text style={styles.subdescription}>
-    A balanced option for most lifts. Great for combining intensity and volume without accumulating excessive fatigue. Ideal for moderate effort compounds and accessories.
- </Text>
- </View>
-    </View>
+
+        <View style={styles.footer}>
+          <View style={styles.toggleRow}>
+            {useBodyweightMode && (
+              <TextInput
+                style={styles.input2}
+                keyboardType="numeric"
+                placeholder="kg"
+                value={bodyweight}
+                onChangeText={setBodyweight}
+              />
+            )}
+            <Text>Use Bodyweight + Load</Text>
+            <Switch value={useBodyweightMode} onValueChange={setUseBodyweightMode} />
+          </View>
+
+          <View style={styles.toggleRow}>
+            <Text>Use lbs</Text>
+            <Switch value={useLbs} onValueChange={handleToggleUnit} />
+          </View>
+
+          <View style={styles.divider} />
+          {!useBodyweightMode && (
+  <>
+    <Text style={styles.subtitle}>Why choose 3 sets?</Text>
+    <Text style={styles.subdescription}>
+      A balanced option for most lifts. Great for combining intensity and volume without accumulating excessive fatigue. Ideal for moderate effort compounds and accessories.
+    </Text>
+  </>
+)}
+
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -176,44 +137,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 5,
-    gap: "5",
+    gap: 5,
   },
   title: {
-  fontSize: 24,
-  fontWeight: 'bold',
-  marginBottom: 8,
-  textAlign: 'center',
-},
-description: {
-  fontSize: 16,
-  color: '#555',
-  marginBottom: 20,
-  textAlign: 'center',
-  paddingHorizontal: 10,
-},
-divider: {
-    alignItems: 'center', // center horizontally
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 20,
+    textAlign: 'center',
+    paddingHorizontal: 10,
+  },
+  divider: {
+    alignItems: 'center',
     width: '100%',
     height: 1,
     backgroundColor: '#ccc',
     marginBottom: 10,
-},
-footer: {
-  paddingHorizontal: 2,
-  marginBottom: 10,
-},
-subtitle: {
-  fontSize: 18,
-  fontWeight: '600',
-  marginBottom: 4,
-  textAlign: 'center',
-},
-subdescription: {
-  fontSize: 15,
-  color: '#666',
-  textAlign: 'center',
-  paddingHorizontal: 10,
-  marginBottom: 10,
-}, 
+  },
+  footer: {
+    paddingHorizontal: 2,
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  subdescription: {
+    fontSize: 15,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
 });
-

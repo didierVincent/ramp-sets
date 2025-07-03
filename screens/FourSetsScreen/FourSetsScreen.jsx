@@ -1,105 +1,83 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Keyboard, TouchableWithoutFeedback, View, Text, TextInput, StyleSheet, Switch } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  Keyboard,
+  TouchableWithoutFeedback,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Switch,
+} from 'react-native';
+
 import SetTable from '../../components/SetTable/SetTable';
 import { OneRMContext } from '../../context/OneRMContext';
 
 export default function FourSetsScreen() {
   const {
-      globalOneRM,
-      setGlobalOneRM,
-      roundTo2_5,
-      setRoundTo2_5,
-      roundTo5,
-      setRoundTo5,
-      useBodyweightMode,
-      setUseBodyweightMode,
-      bodyweight,
-      setBodyweight,
-  
-    } = useContext(OneRMContext);
+    setsOneRM,
+    setSetsOneRM,
+    useBodyweightMode,
+    setUseBodyweightMode,
+    bodyweight,
+    setBodyweight,
+    useLbs,
+    getUnitLabel,
+    formatDisplayValue,
+    sanitizeInput,
+    parseToKg,
+    toggleUnits,
+  } = useContext(OneRMContext);
 
-  const [oneRM, setOneRM] = useState('');
+  const kgRef = useRef(setsOneRM);
+  const [inputValue, setInputValue] = useState('');
 
-
+  // Sync input when setsOneRM or unit changes
   useEffect(() => {
-    if (globalOneRM !== '0') {
-      setOneRM(globalOneRM);
+    kgRef.current = setsOneRM;
+    const displayStr = formatDisplayValue(setsOneRM);
+    if (displayStr !== inputValue) {
+      setInputValue(displayStr);
     }
-  }, [globalOneRM]);
+  }, [setsOneRM, useLbs]);
 
-  const onToggleBW = (value) => {
-    setUseBodyweightMode(!useBodyweightMode)
-    setRoundTo2_5(false)
-    setRoundTo5(false)
-  }
+  // On user input change — sanitize and update canonical kg value immediately
+  const onChangeText = (text) => {
+    const clean = sanitizeInput(text);
+    setInputValue(clean);
 
-  const handleChangeOneRM = (value) => {
-    setOneRM(value);
-    setGlobalOneRM(value);
-  };
-
-  const onToggle2_5 = (value) => {
-    setRoundTo2_5(value);
-    if (value) setRoundTo5(false);
-  };
-
-  const onToggle5 = (value) => {
-    setRoundTo5(value);
-    if (value) setRoundTo2_5(false);
-  };
-
-  const roundLoad = (load) => {
-    if (roundTo5) {
-      return Math.floor(load / 5) * 5;
+    const kgVal = parseToKg(clean);
+    if (kgVal !== kgRef.current) {
+      kgRef.current = kgVal;
+      setSetsOneRM(kgVal);
     }
-    if (roundTo2_5) {
-      return Math.floor(load / 2.5) * 2.5;
-    }
-    return Math.round(load);
   };
 
-  const getSetData = (oneRM) => {
-    const parsed1RM = parseFloat(oneRM);
-    if (!parsed1RM) return [];
+  // Flip units and update display from current canonical value
+  const handleToggleUnit = () => {
+    toggleUnits();
+    const newDisplay = formatDisplayValue(kgRef.current, !useLbs);
+    setInputValue(newDisplay);
+  };
 
-    const twelveRM = parsed1RM / (1 + 12 / 30);
-    const tenRM = parsed1RM / (1 + 10 / 30);
-    const sevenRM = parsed1RM / (1 + 7 / 30);
-    const fiveRM = parsed1RM / (1 + 5 / 30);
+  // Generate set data from 1RM in kg
+  const getSetData = (kg1RM) => {
+    const oneRM = parseFloat(kg1RM);
+    if (!oneRM) return [];
+
+    const twelveRM = oneRM / (1 + 12 / 30);
+    const tenRM = oneRM / (1 + 10 / 30);
+    const sevenRM = oneRM / (1 + 7 / 30);
+    const fiveRM = oneRM / (1 + 5 / 30);
 
     return [
-      {
-        set: 1,
-        load: roundLoad(twelveRM),
-        loadType: '12RM',
-        reps: 8,
-        rir: 4,
-      },
-      {
-        set: 2,
-        load: roundLoad(tenRM),
-        loadType: '10RM',
-        reps: 7,
-        rir: 3,
-      },
-      {
-        set: 3,
-        load: roundLoad(sevenRM),
-        loadType: '7RM',
-        reps: 6,
-        rir: 1,
-      },
-      {
-        set: 4,
-        load: roundLoad(fiveRM),
-        loadType: '5RM',
-        reps: 5,
-        rir: 0,
-      },
+      { set: 1, load: Math.round(twelveRM), loadType: '12RM', reps: 8, rir: 4 },
+      { set: 2, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
+      { set: 3, load: Math.round(sevenRM), loadType: '7RM', reps: 6, rir: 1 },
+      { set: 4, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
     ];
   };
 
-  const data = getSetData(oneRM);
+  const data = getSetData(kgRef.current);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -114,9 +92,10 @@ export default function FourSetsScreen() {
           <TextInput
             style={styles.input}
             keyboardType="numeric"
-            value={oneRM}
-            onChangeText={handleChangeOneRM}
-            placeholder="1 Rep Max (kg)"
+            maxLength={5}
+            value={inputValue}
+            onChangeText={onChangeText}
+            placeholder={`1 Rep Max (${getUnitLabel()})`}
           />
 
           <SetTable
@@ -137,30 +116,29 @@ export default function FourSetsScreen() {
               />
             )}
             <Text>Use Bodyweight + Load</Text>
-            <Switch value={useBodyweightMode} onValueChange={onToggleBW} />
+            <Switch
+              value={useBodyweightMode}
+              onValueChange={setUseBodyweightMode}
+            />
           </View>
 
-          {/* ✅ Only show these toggles if bodyweight mode is OFF */}
-          {!useBodyweightMode && (
-            <>
-              <View style={styles.toggleRow}>
-                <Text>Round down to nearest 2.5 kg</Text>
-                <Switch value={roundTo2_5} onValueChange={onToggle2_5} />
-              </View>
-              <View style={styles.toggleRow}>
-                <Text>Round down to nearest 5.0 kg</Text>
-                <Switch value={roundTo5} onValueChange={onToggle5} />
-              </View>
-            </>
-          )}
+          <View style={styles.toggleRow}>
+            <Text>Use lbs</Text>
+            <Switch value={useLbs} onValueChange={handleToggleUnit} />
+          </View>
 
           <View style={styles.divider} />
-          <Text style={styles.subtitle}>Why choose 4 sets?</Text>
-          <Text style={styles.subdescription}>
-            Use for priority lifts where strength or skill development is the focus.
-            Allows more quality practice (higher RIR early), making it best for squats,
-            presses, hinges, and rows you want to progress long-term.
-          </Text>
+          {!useBodyweightMode && (
+  <>
+    <Text style={styles.subtitle}>Why choose 4 sets?</Text>
+    <Text style={styles.subdescription}>
+      Use for priority lifts where strength or skill development is the focus.
+      Allows more quality practice (higher RIR early), making it best for squats,
+      presses, hinges, and rows you want to progress long-term.
+    </Text>
+  </>
+)}
+
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -171,14 +149,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, justifyContent: 'space-between' },
   label: { fontSize: 18 },
   input: { borderWidth: 1, padding: 10, fontSize: 18, marginTop: 10 },
-  input2: { borderWidth: 1, padding: 5, fontSize: 18, marginTop: 10, marginRight: 10 },
+  input2: { borderWidth: 1, padding: 5, fontSize: 18, marginTop: 10 },
   toggleRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 5,
-    gap: "5",
+    gap: 5,
   },
   title: {
     fontSize: 24,
