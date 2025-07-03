@@ -39,8 +39,6 @@ export default function TwoSetsScreen() {
   const clean = sanitizeInput(text);
   setInputValue(clean);
 
-  if (!isValidInputValue(clean)) return;
-
   const kgVal = parseToKg(clean);
   if (kgVal !== kgRef.current) {
     kgRef.current = kgVal;
