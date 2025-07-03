@@ -61,23 +61,24 @@ export default function FiveSetsScreen() {
 
   // Generate set data from 1RM in kg
   const getSetData = (kg1RM) => {
-    const oneRM = parseFloat(kg1RM);
-    if (!oneRM) return [];
+  const oneRM = parseFloat(kg1RM);
+  if (!oneRM) return [];
 
-    const seventeenRM = oneRM / (1 + 17 / 30);
-    const fourteenRM = oneRM / (1 + 14 / 30);
-    const elevenRM = oneRM / (1 + 11 / 30);
-    const eightRM = oneRM / (1 + 8 / 30);
-    const fiveRM = oneRM / (1 + 5 / 30);
+  const twelveRM = oneRM / (1 + 12 / 30);    // ~8 reps @ 4 RIR
+  const tenRM = oneRM / (1 + 10 / 30);       // ~7 reps @ 3 RIR
+  const eightRM = oneRM / (1 + 8 / 30);      // ~6 reps @ 2 RIR
+  const sixRM = oneRM / (1 + 6 / 30); // ~6 reps @ 1 RIR
+  const fiveRM = oneRM / (1 + 5 / 30);       // ~5 reps @ 0 RIR
 
-    return [
-      { set: 1, load: Math.round(seventeenRM), loadType: '17RM', reps: 12, rir: 5 },
-      { set: 2, load: Math.round(fourteenRM), loadType: '14RM', reps: 10, rir: 4 },
-      { set: 3, load: Math.round(elevenRM), loadType: '11RM', reps: 8, rir: 3 },
-      { set: 4, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
-      { set: 5, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
-    ];
-  };
+  return [
+    { set: 1, load: Math.round(twelveRM), loadType: '12RM', reps: 8, rir: 4 },
+    { set: 2, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
+    { set: 3, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
+    { set: 4, load: Math.round(sixRM), loadType: '6RM', reps: 5, rir: 1 },
+    { set: 5, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
+  ];
+};
+
 
   const data = getSetData(kgRef.current);
 
@@ -87,7 +88,7 @@ export default function FiveSetsScreen() {
         <View style={styles.main}>
           <Text style={styles.title}>Ramp Sets</Text>
           <Text style={styles.description}>
-            RIR: 5 → 4 → 3 → 2 → 0{'\n'}Reps: 12, 10, 8, 6, 4
+            RIR: 4 → 3 → 2 → 1 → 0{'\n'}Reps: 8, 7, 6, 6, 5
           </Text>
 
           <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>
