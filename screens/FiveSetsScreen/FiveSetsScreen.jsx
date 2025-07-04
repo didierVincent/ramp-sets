@@ -88,7 +88,7 @@ export default function FiveSetsScreen() {
         <View style={styles.main}>
           <Text style={styles.title}>Ramp Sets</Text>
           <Text style={styles.description}>
-            RIR: 4 → 3 → 2 → 1 → 0{'\n'}Reps: 8, 7, 6, 6, 5
+            RIR: 4 → 3 → 2 → 1 → 0{'\n'}Reps: 8, 7, 6, 5, 5
           </Text>
 
           <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>

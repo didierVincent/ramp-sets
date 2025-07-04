@@ -44,7 +44,7 @@ export default function SetTable({ data, bodyweight }) {
 
           if (displayLoad > bwDisplay) {
             extraLoad = roundLoad(displayLoad - bwDisplay);
-            totalLoadStr = `${bwDisplay} + ${extraLoad} = ${displayLoad} ${unit}`;
+            totalLoadStr = ` +${extraLoad} ${unit}`;
           } else {
             totalLoadStr = `${displayLoad} ${unit}`;
           }
