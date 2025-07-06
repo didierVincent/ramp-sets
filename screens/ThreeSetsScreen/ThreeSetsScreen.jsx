@@ -19,11 +19,14 @@ export default function ThreeSetsScreen() {
     bodyweight, setBodyweight,
     useLbs, getUnitLabel,
     formatDisplayValue, sanitizeInput, parseToKg, toggleUnits,
+    userSetSettings,
+    calculateLoadFrom1RM,
   } = useContext(OneRMContext);
 
   const kgRef = useRef(setsOneRM);
   const [inputValue, setInputValue] = useState('');
 
+  // Sync input display with setsOneRM or unit changes
   useEffect(() => {
     kgRef.current = setsOneRM;
     const displayStr = formatDisplayValue(setsOneRM);
@@ -32,6 +35,7 @@ export default function ThreeSetsScreen() {
     }
   }, [setsOneRM, useLbs]);
 
+  // Handle input changes for 1RM
   const onChangeText = (text) => {
     const clean = sanitizeInput(text);
     setInputValue(clean);
@@ -49,18 +53,25 @@ export default function ThreeSetsScreen() {
     setInputValue(newDisplay);
   };
 
+  // Generate set data based on userSetSettings for 3 sets and current 1RM
   const getSetData = (kg1RM) => {
     const oneRM = parseFloat(kg1RM);
     if (!oneRM) return [];
-    const tenRM = oneRM / (1 + 10 / 30);
-    const eightRM = oneRM / (1 + 8 / 30);
-    const fiveRM = oneRM / (1 + 5 / 30);
 
-    return [
-      { set: 1, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
-      { set: 2, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
-      { set: 3, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
-    ];
+    const config = userSetSettings[3];
+    if (!config || !config.length) return [];
+
+    return config.map((setConf, index) => {
+      const totalReps = setConf.reps + setConf.rir;
+      const load = calculateLoadFrom1RM(oneRM, totalReps);
+      return {
+        set: index + 1,
+        load: Math.round(load),
+        loadType: `${totalReps}RM`,
+        reps: setConf.reps,
+        rir: setConf.rir,
+      };
+    });
   };
 
   const data = getSetData(kgRef.current);
@@ -111,14 +122,13 @@ export default function ThreeSetsScreen() {
 
           <View style={styles.divider} />
           {!useBodyweightMode && (
-  <>
-    <Text style={styles.subtitle}>Why choose 3 sets?</Text>
-    <Text style={styles.subdescription}>
-      A balanced option for most lifts. Great for combining intensity and volume without accumulating excessive fatigue. Ideal for moderate effort compounds and accessories.
-    </Text>
-  </>
-)}
-
+            <>
+              <Text style={styles.subtitle}>Why choose 3 sets?</Text>
+              <Text style={styles.subdescription}>
+                A balanced option for most lifts. Great for combining intensity and volume without accumulating excessive fatigue. Ideal for moderate effort compounds and accessories.
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>

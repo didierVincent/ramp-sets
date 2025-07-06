@@ -19,7 +19,7 @@ export default function TwoSetsScreen() {
     bodyweight, setBodyweight,
     useLbs, getUnitLabel,
     formatDisplayValue, sanitizeInput, parseToKg,
-    toggleUnits,
+    toggleUnits, calculateLoadFrom1RM,
     getRMFromRepsAndRIR,
     userSetSettings, // FIXED from `setSettings`
   } = useContext(OneRMContext);
@@ -40,7 +40,7 @@ export default function TwoSetsScreen() {
   // Update set data when 1RM or user-defined settings change
   useEffect(() => {
   const oneRM = parseFloat(kgRef.current) || 0;
-  const config = userSetSettings[2]; // 2-set screen config
+  const config = userSetSettings[2];
   if (!oneRM || !config?.length) {
     setSetData([]);
     return;
@@ -48,12 +48,7 @@ export default function TwoSetsScreen() {
 
   const updated = config.map((conf, index) => {
     const totalReps = conf.reps + conf.rir;
-
-    // If 1 rep and 0 RIR, load = oneRM exactly
-    const load = (conf.reps === 1 && conf.rir === 0)
-      ? oneRM
-      : oneRM / (1 + totalReps / 30);
-
+    const load = calculateLoadFrom1RM(oneRM, totalReps);
     return {
       set: index + 1,
       load: Math.round(load),
@@ -65,6 +60,7 @@ export default function TwoSetsScreen() {
 
   setSetData(updated);
 }, [setsOneRM, userSetSettings]);
+
 
 
   const onChangeText = (text) => {

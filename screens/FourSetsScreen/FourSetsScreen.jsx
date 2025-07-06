@@ -26,12 +26,14 @@ export default function FourSetsScreen() {
     sanitizeInput,
     parseToKg,
     toggleUnits,
+    userSetSettings,
+    calculateLoadFrom1RM,
   } = useContext(OneRMContext);
 
   const kgRef = useRef(setsOneRM);
   const [inputValue, setInputValue] = useState('');
 
-  // Sync input when setsOneRM or unit changes
+  // Sync display string with internal kg value when unit or 1RM changes
   useEffect(() => {
     kgRef.current = setsOneRM;
     const displayStr = formatDisplayValue(setsOneRM);
@@ -52,29 +54,30 @@ export default function FourSetsScreen() {
     }
   };
 
-  // Flip units and update display from current canonical value
   const handleToggleUnit = () => {
     toggleUnits();
     const newDisplay = formatDisplayValue(kgRef.current, !useLbs);
     setInputValue(newDisplay);
   };
 
-  // Generate set data from 1RM in kg
   const getSetData = (kg1RM) => {
     const oneRM = parseFloat(kg1RM);
     if (!oneRM) return [];
 
-    const twelveRM = oneRM / (1 + 12 / 30);
-    const tenRM = oneRM / (1 + 10 / 30);
-    const sevenRM = oneRM / (1 + 7 / 30);
-    const fiveRM = oneRM / (1 + 5 / 30);
+    const config = userSetSettings[4];
+    if (!config || !config.length) return [];
 
-    return [
-      { set: 1, load: Math.round(twelveRM), loadType: '12RM', reps: 8, rir: 4 },
-      { set: 2, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
-      { set: 3, load: Math.round(sevenRM), loadType: '7RM', reps: 6, rir: 1 },
-      { set: 4, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
-    ];
+    return config.map((setConf, index) => {
+      const totalReps = setConf.reps + setConf.rir;
+      const load = calculateLoadFrom1RM(oneRM, totalReps);
+      return {
+        set: index + 1,
+        load: Math.round(load),
+        loadType: `${totalReps}RM`,
+        reps: setConf.reps,
+        rir: setConf.rir,
+      };
+    });
   };
 
   const data = getSetData(kgRef.current);
@@ -128,16 +131,15 @@ export default function FourSetsScreen() {
 
           <View style={styles.divider} />
           {!useBodyweightMode && (
-  <>
-    <Text style={styles.subtitle}>Why choose 4 sets?</Text>
-    <Text style={styles.subdescription}>
-      Use for priority lifts where strength or skill development is the focus.
-      Allows more quality practice (higher RIR early), making it best for squats,
-      presses, hinges, and rows you want to progress long-term.
-    </Text>
-  </>
-)}
-
+            <>
+              <Text style={styles.subtitle}>Why choose 4 sets?</Text>
+              <Text style={styles.subdescription}>
+                Use for priority lifts where strength or skill development is the focus.
+                Allows more quality practice (higher RIR early), making it best for squats,
+                presses, hinges, and rows you want to progress long-term.
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>

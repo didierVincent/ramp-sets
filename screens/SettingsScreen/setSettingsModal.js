@@ -59,7 +59,7 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
       <View style={styles.container}>
         <Text style={styles.title}>Edit Set Settings</Text>
         <Text style={styles.subtitle}>
-          Adjust reps and RIR (Reps In Reserve) for each set below.
+          Adjust reps and RIR for each set below.
         </Text>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {settings.map((set, i) => (

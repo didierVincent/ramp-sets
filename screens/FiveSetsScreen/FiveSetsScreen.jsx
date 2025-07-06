@@ -26,12 +26,14 @@ export default function FiveSetsScreen() {
     sanitizeInput,
     parseToKg,
     toggleUnits,
+    userSetSettings,
+    calculateLoadFrom1RM,
   } = useContext(OneRMContext);
 
   const kgRef = useRef(setsOneRM);
   const [inputValue, setInputValue] = useState('');
 
-  // Sync input when setsOneRM or unit changes
+  // Sync input with setsOneRM or unit change
   useEffect(() => {
     kgRef.current = setsOneRM;
     const displayStr = formatDisplayValue(setsOneRM);
@@ -40,7 +42,6 @@ export default function FiveSetsScreen() {
     }
   }, [setsOneRM, useLbs]);
 
-  // On user input change — sanitize and update canonical kg value immediately
   const onChangeText = (text) => {
     const clean = sanitizeInput(text);
     setInputValue(clean);
@@ -52,33 +53,31 @@ export default function FiveSetsScreen() {
     }
   };
 
-  // Flip units and update display from current canonical value
   const handleToggleUnit = () => {
     toggleUnits();
     const newDisplay = formatDisplayValue(kgRef.current, !useLbs);
     setInputValue(newDisplay);
   };
 
-  // Generate set data from 1RM in kg
   const getSetData = (kg1RM) => {
-  const oneRM = parseFloat(kg1RM);
-  if (!oneRM) return [];
+    const oneRM = parseFloat(kg1RM);
+    if (!oneRM) return [];
 
-  const twelveRM = oneRM / (1 + 12 / 30);    // ~8 reps @ 4 RIR
-  const tenRM = oneRM / (1 + 10 / 30);       // ~7 reps @ 3 RIR
-  const eightRM = oneRM / (1 + 8 / 30);      // ~6 reps @ 2 RIR
-  const sixRM = oneRM / (1 + 6 / 30); // ~6 reps @ 1 RIR
-  const fiveRM = oneRM / (1 + 5 / 30);       // ~5 reps @ 0 RIR
+    const config = userSetSettings[5];
+    if (!config || !config.length) return [];
 
-  return [
-    { set: 1, load: Math.round(twelveRM), loadType: '12RM', reps: 8, rir: 4 },
-    { set: 2, load: Math.round(tenRM), loadType: '10RM', reps: 7, rir: 3 },
-    { set: 3, load: Math.round(eightRM), loadType: '8RM', reps: 6, rir: 2 },
-    { set: 4, load: Math.round(sixRM), loadType: '6RM', reps: 5, rir: 1 },
-    { set: 5, load: Math.round(fiveRM), loadType: '5RM', reps: 5, rir: 0 },
-  ];
-};
-
+    return config.map((conf, index) => {
+      const rm = conf.reps + conf.rir;
+      const load = calculateLoadFrom1RM(oneRM, rm);
+      return {
+        set: index + 1,
+        load: Math.round(load),
+        loadType: `${rm}RM`,
+        reps: conf.reps,
+        rir: conf.rir,
+      };
+    });
+  };
 
   const data = getSetData(kgRef.current);
 
@@ -118,10 +117,7 @@ export default function FiveSetsScreen() {
               />
             )}
             <Text>Use Bodyweight + Load</Text>
-            <Switch
-              value={useBodyweightMode}
-              onValueChange={setUseBodyweightMode}
-            />
+            <Switch value={useBodyweightMode} onValueChange={setUseBodyweightMode} />
           </View>
 
           <View style={styles.toggleRow}>
@@ -131,13 +127,13 @@ export default function FiveSetsScreen() {
 
           <View style={styles.divider} />
           {!useBodyweightMode && (
-  <>
-    <Text style={styles.subtitle}>Why choose 5 sets?</Text>
-    <Text style={styles.subdescription}>
-      Ideal for advanced progression and work capacity. Provides volume and intensity to develop strength and endurance. Best for key lifts focused on consistent overload and technique over time.
-    </Text>
-  </>
-)}
+            <>
+              <Text style={styles.subtitle}>Why choose 5 sets?</Text>
+              <Text style={styles.subdescription}>
+                Ideal for advanced progression and work capacity. Provides volume and intensity to develop strength and endurance. Best for key lifts focused on consistent overload and technique over time.
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>
