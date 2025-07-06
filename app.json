@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.didiervincent.rir-ramp-app",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
