@@ -57,29 +57,79 @@ export const OneRMProvider = ({ children }) => {
     setUseLbs((prev) => !prev);
   };
 
-  return (
-    <OneRMContext.Provider
-      value={{
-        // State
-        rawOneRM, setRawOneRM,
-        setsOneRM, setSetsOneRM,
-        useBodyweightMode, setUseBodyweightMode,
-        bodyweight, setBodyweight,
-        useLbs, setUseLbs,
+  // Add default structure for 2–5 sets
+const [userSetSettings, setUserSetSettings] = useState({
+  2: [
+    { reps: 18, rir: 2 },
+    { reps: 6, rir: 0 },
+  ],
+  3: [
+    { reps: 7, rir: 3 },
+    { reps: 6, rir: 2 },
+    { reps: 5, rir: 0 },
+  ],
+  4: [
+    { reps: 8, rir: 4 },
+    { reps: 7, rir: 3 },
+    { reps: 6, rir: 1 },
+    { reps: 5, rir: 0 },
+  ],
+  5: [
+    { reps: 7, rir: 4 },
+    { reps: 7, rir: 3 },
+    { reps: 6, rir: 2 },
+    { reps: 6, rir: 1 },
+    { reps: 5, rir: 0 },
+  ]
+});
 
-        // Conversion
-        convertToLbs, convertToKg,
+const setSetSettings = (setCount, newSettings) => {
+  setUserSetSettings((prev) => ({
+    ...prev,
+    [setCount]: newSettings,
+  }));
+};
 
-        // Display
-        getUnitLabel, convertForDisplay,
-        calculate1RM, setOneRMFromCalc,
 
-        // Helpers
-        formatDisplayValue, sanitizeInput, parseToKg,
-        toggleUnits,
-      }}
-    >
-      {children}
-    </OneRMContext.Provider>
-  );
+// Helper function to get RM based on reps and rir
+const getRMFromRepsAndRIR = (reps, rir) => {
+  const targetReps = reps + rir;
+  return targetReps <= 0 ? null : targetReps;
+};
+
+
+const getSettings = () => JSON.parse(JSON.stringify(userSetSettings));
+
+return (
+  <OneRMContext.Provider
+    value={{
+      // State
+      rawOneRM, setRawOneRM,
+      setsOneRM, setSetsOneRM,
+      useBodyweightMode, setUseBodyweightMode,
+      bodyweight, setBodyweight,
+      useLbs, setUseLbs,
+
+      // Conversion
+      convertToLbs, convertToKg,
+
+      // Display
+      getUnitLabel, convertForDisplay,
+      calculate1RM, setOneRMFromCalc,
+
+      // Helpers
+      formatDisplayValue, sanitizeInput, parseToKg,
+      toggleUnits,
+
+      // Settings
+      userSetSettings,
+      setSetSettings,
+      getRMFromRepsAndRIR,
+      getSettings,
+    }}
+  >
+    {children}
+  </OneRMContext.Provider>
+);
+
 };

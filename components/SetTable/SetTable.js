@@ -3,7 +3,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { OneRMContext } from '../../context/OneRMContext';
 
 export default function SetTable({ data, bodyweight }) {
-  const { useLbs, convertToLbs, convertToKg, getUnitLabel } = useContext(OneRMContext);
+  const {
+    useLbs,
+    convertToLbs,
+    getUnitLabel,
+    formatDisplayValue,
+  } = useContext(OneRMContext);
 
   if (!data || data.length === 0) {
     return <Text style={styles.placeholder}>(use 1RM calc, or enter 1RM above)</Text>;
@@ -11,6 +16,8 @@ export default function SetTable({ data, bodyweight }) {
 
   const showBodyweight = bodyweight !== null && bodyweight !== '' && !isNaN(bodyweight);
   const unit = getUnitLabel();
+
+  const roundLoad = (val) => Math.round(val);
 
   return (
     <View style={styles.table}>
@@ -23,33 +30,27 @@ export default function SetTable({ data, bodyweight }) {
       </View>
 
       {data.map((set, i) => {
-        let loadKg = parseFloat(set.load);
+        const loadKg = parseFloat(set.load);
 
-        // Convert load from kg to lbs if needed
-        let displayLoad = useLbs ? convertToLbs(loadKg) : loadKg;
+        // Use context helper to format load for display
+        let displayLoadStr = formatDisplayValue(loadKg);
 
-        // Round load nicely
-        const roundLoad = (val) => Math.round(val);
-
-        displayLoad = roundLoad(displayLoad);
-
-        // If showing bodyweight split, convert bodyweight to same unit as load display
-        let bwDisplay = null;
-        let extraLoad = null;
-        let totalLoadStr = '';
+        // If showing bodyweight split, calculate extra load relative to bodyweight
+        let totalLoadStr = displayLoadStr + ' ' + unit;
 
         if (showBodyweight) {
-          const bw = useLbs ? convertToLbs(parseFloat(bodyweight)) : parseFloat(bodyweight);
-          bwDisplay = roundLoad(bw);
+          const bwVal = parseFloat(bodyweight);
+          const bwDisplay = formatDisplayValue(bwVal);
+          const loadVal = useLbs ? convertToLbs(loadKg) : loadKg;
 
-          if (displayLoad > bwDisplay) {
-            extraLoad = roundLoad(displayLoad - bwDisplay);
-            totalLoadStr = ` +${extraLoad} ${unit}`;
+          const bwValForCompare = useLbs ? convertToLbs(bwVal) : bwVal;
+          const extraLoad = loadVal - bwValForCompare;
+
+          if (extraLoad > 0) {
+            totalLoadStr = `${bwDisplay} ${unit} +${Math.round(extraLoad)} ${unit}`;
           } else {
-            totalLoadStr = `${displayLoad} ${unit}`;
+            totalLoadStr = `${displayLoadStr} ${unit}`;
           }
-        } else {
-          totalLoadStr = `${displayLoad} ${unit}`;
         }
 
         return (

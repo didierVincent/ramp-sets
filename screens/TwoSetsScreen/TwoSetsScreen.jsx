@@ -20,12 +20,15 @@ export default function TwoSetsScreen() {
     useLbs, getUnitLabel,
     formatDisplayValue, sanitizeInput, parseToKg,
     toggleUnits,
+    getRMFromRepsAndRIR,
+    userSetSettings, // FIXED from `setSettings`
   } = useContext(OneRMContext);
 
   const kgRef = useRef(setsOneRM);
   const [inputValue, setInputValue] = useState('');
+  const [setData, setSetData] = useState([]);
 
-  // Sync input when setsOneRM or unit changes
+  // Sync text input display when 1RM or unit changes
   useEffect(() => {
     kgRef.current = setsOneRM;
     const displayStr = formatDisplayValue(setsOneRM);
@@ -34,39 +37,52 @@ export default function TwoSetsScreen() {
     }
   }, [setsOneRM, useLbs]);
 
-  // On user input change — sanitize and update canonical kg value immediately
-  const onChangeText = (text) => {
-  const clean = sanitizeInput(text);
-  setInputValue(clean);
-
-  const kgVal = parseToKg(clean);
-  if (kgVal !== kgRef.current) {
-    kgRef.current = kgVal;
-    setSetsOneRM(kgVal);
+  // Update set data when 1RM or user-defined settings change
+  useEffect(() => {
+  const oneRM = parseFloat(kgRef.current) || 0;
+  const config = userSetSettings[2]; // 2-set screen config
+  if (!oneRM || !config?.length) {
+    setSetData([]);
+    return;
   }
-};
+
+  const updated = config.map((conf, index) => {
+    const totalReps = conf.reps + conf.rir;
+
+    // If 1 rep and 0 RIR, load = oneRM exactly
+    const load = (conf.reps === 1 && conf.rir === 0)
+      ? oneRM
+      : oneRM / (1 + totalReps / 30);
+
+    return {
+      set: index + 1,
+      load: Math.round(load),
+      loadType: `${totalReps}RM`,
+      reps: conf.reps,
+      rir: conf.rir,
+    };
+  });
+
+  setSetData(updated);
+}, [setsOneRM, userSetSettings]);
 
 
-  // Flip units and update display from current canonical value
+  const onChangeText = (text) => {
+    const clean = sanitizeInput(text);
+    setInputValue(clean);
+
+    const kgVal = parseToKg(clean);
+    if (kgVal !== kgRef.current) {
+      kgRef.current = kgVal;
+      setSetsOneRM(kgVal);
+    }
+  };
+
   const handleToggleUnit = () => {
     toggleUnits();
     const newDisplay = formatDisplayValue(kgRef.current, !useLbs);
     setInputValue(newDisplay);
   };
-
-  // Generate set data from 1RM in kg
-  const getSetData = (kg1RM) => {
-    const oneRM = parseFloat(kg1RM);
-    if (!oneRM) return [];
-    const tenRM = oneRM / (1 + 10 / 30);
-    const sixRM = oneRM / (1 + 6 / 30);
-    return [
-      { set: 1, load: Math.round(tenRM), loadType: '10RM', reps: 8, rir: 2 },
-      { set: 2, load: Math.round(sixRM), loadType: '6RM', reps: 6, rir: 0 },
-    ];
-  };
-
-  const data = getSetData(kgRef.current);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -87,7 +103,7 @@ export default function TwoSetsScreen() {
           />
 
           <SetTable
-            data={data}
+            data={setData}
             bodyweight={useBodyweightMode ? parseFloat(bodyweight) : null}
           />
         </View>
@@ -116,10 +132,14 @@ export default function TwoSetsScreen() {
           </View>
 
           <View style={styles.divider} />
-          <Text style={styles.subtitle}>Why choose 2 sets?</Text>
-          <Text style={styles.subdescription}>
-            Best for isolation movements, time efficiency, or exercises you’re maintaining. Works well when intensity is high (low RIR), or as accessory volume in a dense program.
-          </Text>
+          {!useBodyweightMode && (
+            <>
+              <Text style={styles.subtitle}>Why choose 2 sets?</Text>
+              <Text style={styles.subdescription}>
+                Best for isolation movements, time efficiency, or exercises you’re maintaining. Works well when intensity is high (low RIR), or as accessory volume in a dense program.
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>
