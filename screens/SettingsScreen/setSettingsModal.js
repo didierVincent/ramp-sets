@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SetSettingsModal({ visible, onClose, onSave, initialSettings }) {
-  // Store reps and RIR as strings to allow smooth input editing
   const [settings, setSettings] = useState(
     initialSettings.map(set => ({
       reps: set.reps.toString(),
@@ -10,7 +10,14 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
     }))
   );
 
-  // Sync local state with initialSettings when modal opens/closes
+  const navigation = useNavigation();
+
+  const goToSetupHelper = () => {
+    onClose(); // Optionally close the modal
+    navigation.navigate('QuickTips');
+  };
+
+
   useEffect(() => {
     setSettings(
       initialSettings.map(set => ({
@@ -20,10 +27,8 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
     );
   }, [initialSettings, visible]);
 
-  // Update input string without clamping on edit
   const updateRep = (i, val) => {
     const newSettings = [...settings];
-    // Allow only digits and empty string
     if (/^\d*$/.test(val)) {
       newSettings[i].reps = val;
       setSettings(newSettings);
@@ -38,7 +43,6 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
     }
   };
 
-  // On Save: clamp values and convert to numbers
   const handleSave = () => {
     const clampedSettings = settings.map(({ reps, rir }) => {
       let repsNum = parseInt(reps, 10);
@@ -57,11 +61,12 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
       <View style={styles.container}>
-        <Text style={styles.title}>Edit Set Settings</Text>
+        <Text style={styles.title}>Adjust Reps & RIR</Text>
         <Text style={styles.subtitle}>
-          Adjust reps and RIR for each set below.
+          Adjust reps to your preference, RIR is more specific to your goals.
         </Text>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+
+        <View contentContainerStyle={styles.scrollContainer}>
           {settings.map((set, i) => (
             <View key={i} style={styles.row}>
               <Text style={styles.setLabel}>Set {i + 1}</Text>
@@ -91,16 +96,28 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
               </View>
             </View>
           ))}
-        </ScrollView>
+        </View>
 
         <View style={styles.buttonRow}>
           <Button title="Cancel" onPress={onClose} />
           <Button title="Save" onPress={handleSave} />
         </View>
+
+        <View style={{ marginTop: 10, marginBottom: 20 }}>
+  <Button title="👋 View App Tips & Guide" onPress={goToSetupHelper} color={'grey'} />
+</View>
+
+
+        
+
+        
+
+        
       </View>
     </Modal>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -111,7 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   scrollContainer: {
-    paddingBottom: 40,
+    paddingBottom: 0,
   },
   title: {
     fontSize: 24,
@@ -122,9 +139,16 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 20,
+    marginBottom: 12,
     textAlign: 'center',
     paddingHorizontal: 10,
+  },
+  subtitleSmall: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontStyle: 'italic',
   },
   row: {
     flexDirection: 'row',
@@ -160,6 +184,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 30,
-    marginBottom: 200,
+    marginBottom: 30,
   },
 });

@@ -90,7 +90,7 @@ const renderGoalStep = () => (
 
   const renderSetCountStep = () => (
       <>
-        <Text style={styles.title}>Choose your training tabs.</Text>
+        <Text style={styles.title}>Choose your set layouts.</Text>
         <Text style={styles.subtitle}>
           How many sets do you usually train with?
           </Text>
@@ -126,21 +126,18 @@ const renderGoalStep = () => (
 
     const renderCustomizeStep = () => (
         <>
-          <Text style={styles.title}>Done!</Text>
-          <Text style={styles.subtitle}>
-            Simply enter your 1-Rep Max and we'll instantly build out your sets.
-            </Text>
-            <Text style={styles.subtitleSmall}>
-            Don't waste time figuring out how heavy, how many reps or how hard to push yourself anymore.
-          </Text>
+          <Text style={styles.title2}>Done!</Text>
+                <Text style={styles.subtitle}>
+                  Don't waste time figuring out how heavy, how many reps or how hard to push yourself anymore.
+                  </Text>
+                  <Text style={styles.subtitleSmall}>
+                  {'\n'}More info on how to use the app inside.
+                </Text>
             
           <View style={[styles.navRow, { justifyContent: 'space-around' }]}>
             <Button title="Back" onPress={handleBack} color="#007AFF" />
             <Button title="Save" onPress={handleComplete} color="#007AFF" />
           </View>
-          <Text style={styles.subtitleSmall}>
-            (Adjust reps and rir per set in settings)
-          </Text>
         </>
       );
 
@@ -178,6 +175,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 32,
+    textAlign: 'center',
+  },
+  title2: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 32,
+    marginTop: 102,
     textAlign: 'center',
   },
   subtitle: {

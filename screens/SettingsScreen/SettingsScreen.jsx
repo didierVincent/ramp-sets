@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, Button, StyleSheet } from 'react-native';
+import React, { useContext, useState, useEffect, useLayoutEffect} from 'react';
+import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { OneRMContext } from '../../context/OneRMContext';
 import SetSettingsModal from './setSettingsModal';
 import SetBuilderWalkthroughModal from './SetBuilderWalkthroughModal';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SettingsScreen() {
   const {
@@ -19,11 +21,31 @@ export default function SettingsScreen() {
   const [walkthroughVisible, setWalkthroughVisible] = useState(false);
   const [selectedSetCounts, setSelectedSetCounts] = useState(activeSetScreens || []);
 
+
+
+
   useEffect(() => {
     if (activeSetScreens) {
       setSelectedSetCounts(activeSetScreens);
     }
   }, [activeSetScreens]);
+
+    const navigation = useNavigation();
+
+
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerRight: () => (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('QuickTips')}
+        style={{ marginRight: 0 }}
+      >
+        <Ionicons name="help-circle-outline" size={28} color="#007AFF" />
+      </TouchableOpacity>
+    ),
+  });
+}, [navigation]);
+
 
   const openModalFor = (index) => {
     setCurrentIndex(index);
@@ -63,9 +85,9 @@ export default function SettingsScreen() {
       )}
 
       <Button
-        title="Edit Training Focus & Set Tabs"
+        title="Edit Training Focus & Set Layouts"
         onPress={() => setWalkthroughVisible(true)}
-        color={'blue'}
+        color={'#d9534f'}
       />
 
       <SetBuilderWalkthroughModal
@@ -78,13 +100,26 @@ export default function SettingsScreen() {
 
       <View style={styles.divider} />
 
-      <Text style={styles.subtitle}>
+      <View style={styles.resetContainer}>
+        <Button
+          title="Reset Goals & Set Tabs"
+          color="#d9534f"
+          onPress={handleReset}
+        />
+      </View>
+
+     
+
+      <View style={styles.divider} />
+
+       <Text style={styles.subtitle}>
         If you prefer more control, adjust individual set reps and RIR below.
       </Text>
 
       {selectedSetCounts.length === 0 && (
         <Text style={styles.subtitleSmall}>
-          No sets selected yet. Start by using the "Build My Set Plan" button above.
+          No set layouts selected yet. 
+          {'\n\n'}Tap "Edit Training Focus & Set Layouts" at the top.
         </Text>
       )}
 
@@ -98,15 +133,7 @@ export default function SettingsScreen() {
         </View>
       ))}
 
-      <View style={styles.divider} />
-
-      <View style={styles.resetContainer}>
-        <Button
-          title="Reset Goals & Set Tabs"
-          color="#d9534f"
-          onPress={handleReset}
-        />
-      </View>
+      
 
       {currentIndex !== null && userSetSettings && userSetSettings[currentIndex] && (
         <SetSettingsModal
@@ -123,7 +150,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   buttonContainer: { marginBottom: 10 },
-  resetContainer: { marginTop: 30 },
+  resetContainer: { marginTop: 0 },
   divider: {
     height: 1,
     backgroundColor: '#ccc',
@@ -133,7 +160,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginTop: 100,
-    marginBottom: 8,
+    marginBottom: 28,
     textAlign: 'center',
   },
   currentGoal: {

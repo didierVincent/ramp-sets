@@ -1,44 +1,64 @@
-// screens/OnboardingScreen.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function OnboardingScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Ramp Sets</Text>
+      <Text style={styles.title}>🎯 Welcome to Ramp Sets</Text>
       <Text style={styles.subtitle}>
-        We'll help you train smarter with goal-based set recommendations.
+        Build smarter workouts in seconds. This app uses your 1RM to generate customised sets based on your training goal.
       </Text>
       <Text style={styles.subtitleSmall}>
-        Choose a training goal and number of sets to get started.
+        Choose between strength, hypertrophy, or hybrid — or take full control and adjust every rep, RIR, and set layout yourself.
       </Text>
 
-      <Button
-        title="Get Started"
-        onPress={() => navigation.replace('Walkthrough')}
-      />
+      <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Walkthrough')}>
+        <Text style={styles.buttonText}>🚀 Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24 },
+  container: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    padding: 28,
+    backgroundColor: '#0D0106',
+  },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#D73028',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   subtitle: {
     fontSize: 16,
+    color: '#F0F0F0',
     textAlign: 'center',
-    marginBottom: 10,
-    color: '#444',
+    marginBottom: 16,
   },
   subtitleSmall: {
     fontSize: 14,
+    color: '#B0AEBB',
     textAlign: 'center',
-    marginBottom: 30,
-    color: '#777',
+    marginBottom: 40,
+  },
+  button: {
+    backgroundColor: '#4E52BE',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

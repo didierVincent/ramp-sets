@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState, useLayoutEffect} from 'react';
 import {
   Keyboard,
   TouchableWithoutFeedback,
@@ -7,7 +7,11 @@ import {
   TextInput,
   StyleSheet,
   Switch,
+  TouchableOpacity,
 } from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 import SetTable from '../../components/SetTable/SetTable';
 import { OneRMContext } from '../../context/OneRMContext';
@@ -21,10 +25,26 @@ export default function ThreeSetsScreen() {
     formatDisplayValue, sanitizeInput, parseToKg, toggleUnits,
     userSetSettings,
     calculateLoadFrom1RM,
+    userGoal,
   } = useContext(OneRMContext);
 
   const kgRef = useRef(setsOneRM);
   const [inputValue, setInputValue] = useState('');
+
+  const navigation = useNavigation();
+  
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('QuickTips')}
+            style={{ marginRight: 16 }}
+          >
+            <Ionicons name="help-circle-outline" size={28} color="#007AFF" />
+          </TouchableOpacity>
+        ),
+      });
+    }, [navigation]);
 
   // Sync input display with setsOneRM or unit changes
   useEffect(() => {
@@ -81,17 +101,18 @@ export default function ThreeSetsScreen() {
       <View style={styles.container}>
         <View style={styles.main}>
           <Text style={styles.title}>Ramp Sets</Text>
-          <Text style={styles.description}>
-            RIR: 3 → 2 → 0{'\n'}Reps: 7, 6, 5
-          </Text>
+          
+          {userGoal && (
+          <Text style={styles.currentGoal}>Current Goal: {userGoal}</Text>
+            )}
 
-          <Text style={styles.label}>Ramp Sets based on your 1RM:</Text>
+          <Text style={styles.label}>Build sets off your 1RM:</Text>
           <TextInput
             style={styles.input}
             keyboardType="numeric"
             value={inputValue}
             onChangeText={onChangeText}
-            placeholder={`1 Rep Max (${getUnitLabel()})`}
+            placeholder={`Enter 1 Rep Max (${getUnitLabel()})`}
           />
 
           <SetTable
@@ -184,5 +205,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  currentGoal: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+    textAlign: 'center',
+    color: '#333',
   },
 });

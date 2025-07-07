@@ -6,6 +6,8 @@ export const OneRMContext = createContext();
 const USER_SETTINGS_KEY = 'userSetSettings';
 const USER_GOAL_KEY = 'userGoal';
 const ACTIVE_SET_SCREENS_KEY = 'activeSetScreens';
+const BODYWEIGHT_KEY = 'bodyweight';
+
 
 export const OneRMProvider = ({ children }) => {
   // 📦 Core state (always stored in kg)
@@ -14,8 +16,19 @@ export const OneRMProvider = ({ children }) => {
 
   // ⚙️ UI/UX toggles
   const [useBodyweightMode, setUseBodyweightMode] = useState(false);
-  const [bodyweight, setBodyweight] = useState('88'); // string for input
+  const [bodyweight, setBodyweightState] = useState(''); // string for input
   const [useLbs, setUseLbs] = useState(false);
+
+  const setBodyweight = async (val) => {
+  setBodyweightState(val); // updates UI immediately
+
+  try {
+    await AsyncStorage.setItem(BODYWEIGHT_KEY, String(val));
+  } catch (err) {
+    console.warn('Failed to save bodyweight:', err);
+  }
+};
+
 
   // Persisted user goal and sets state
   const [userGoal, setUserGoal] = useState(null);
@@ -105,6 +118,7 @@ export const OneRMProvider = ({ children }) => {
         const storedSettings = await AsyncStorage.getItem(USER_SETTINGS_KEY);
         const storedGoal = await AsyncStorage.getItem(USER_GOAL_KEY);
         const storedActiveSets = await AsyncStorage.getItem(ACTIVE_SET_SCREENS_KEY);
+        const storedBodyweight = await AsyncStorage.getItem(BODYWEIGHT_KEY);
 
         if (storedSettings) {
           setUserSetSettings(JSON.parse(storedSettings));
@@ -119,6 +133,10 @@ export const OneRMProvider = ({ children }) => {
         if (storedActiveSets) {
           setActiveSetScreens(JSON.parse(storedActiveSets));
         }
+
+        if (storedBodyweight !== null) {
+        setBodyweightState(String(storedBodyweight));
+      }
       } catch (err) {
         console.warn('Failed to load user settings:', err);
         setUserSetSettings(hyperDefaultSettings);

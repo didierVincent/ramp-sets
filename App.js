@@ -14,7 +14,9 @@ import FiveSetsScreen from './screens/FiveSetsScreen/FiveSetsScreen';
 import OneRMCalculator from './screens/OneRMCalc/OneRMCalc';
 import SettingsScreen from './screens/SettingsScreen/SettingsScreen';
 import OnboardingScreen from './screens/OnboardingScreen/OnboardingScreen';
-import WalkthroughScreen from './screens/WalkthroughScreen/WalkthroughScreen'; // <-- Use WalkthroughScreen, not modal!
+import WalkthroughScreen from './screens/WalkthroughScreen/WalkthroughScreen'; 
+import SetupHelper from './screens/SettingsScreen/SetupHelper';
+import QuickTips from './screens/SettingsScreen/QuickTips';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,11 +26,11 @@ function MainTabs({ navigation }) {
 
   const withSettingsIcon = (screenName) => ({
     title: screenName,
-    headerRight: () => (
+    headerLeft: () => (
       <Ionicons
         name="settings-outline"
         size={24}
-        style={{ marginRight: 15 }}
+        style={{ marginLeft: 15 }}
         onPress={() => navigation.navigate('Settings')}
       />
     ),
@@ -75,6 +77,19 @@ function RootNavigator() {
             component={SettingsScreen}
             options={{ headerShown: true, title: 'Settings' }}
           />
+          <Stack.Screen
+          name="SetupHelper"
+          component={SetupHelper}
+          options={{ title: 'Training Tips & Guide', headerShown: true }} // ✅ This enables the back button
+          />
+          <Stack.Screen
+          name="QuickTips"
+          component={QuickTips}
+          options={{
+            title: 'Quick Tips',
+            headerShown: true,
+          }}
+          />
         </>
       ) : (
         <>
@@ -84,6 +99,19 @@ function RootNavigator() {
             component={SettingsScreen}
             options={{ headerShown: true, title: 'Settings' }}
           />
+          <Stack.Screen
+          name="SetupHelper"
+          component={SetupHelper}
+          options={{ title: 'Training Tips & Guide', headerShown: true }} // ✅ This enables the back button
+          />
+          <Stack.Screen
+          name="QuickTips"
+          component={QuickTips}
+          options={{
+          title: 'App Tips & Guide',
+          headerShown: true,
+  }} 
+  />
         </>
       )}
     </Stack.Navigator>

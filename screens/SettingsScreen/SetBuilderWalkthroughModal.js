@@ -110,7 +110,7 @@ export default function SetBuilderWalkthroughModal({
 
   const renderSetCountStep = () => (
     <>
-      <Text style={styles.title}>Choose your training tabs.</Text>
+      <Text style={styles.title}>Choose your set layouts.</Text>
       <Text style={styles.subtitle}>
         How many sets do you usually train with?
         </Text>
@@ -148,19 +148,16 @@ export default function SetBuilderWalkthroughModal({
     <>
       <Text style={styles.title}>Done!</Text>
       <Text style={styles.subtitle}>
-        Simply enter your 1-Rep Max and we'll instantly build out your sets.
+        Don't waste time figuring out how heavy, how many reps or how hard to push yourself anymore.
         </Text>
         <Text style={styles.subtitleSmall}>
-        Don't waste time figuring out how heavy, how many reps or how hard to push yourself anymore.
+        More info on how to use the app inside.
       </Text>
         
       <View style={[styles.navRow, { justifyContent: 'space-around' }]}>
         <Button title="Back" onPress={handleBack} color="#007AFF" />
         <Button title="Save" onPress={handleComplete} color="#007AFF" />
       </View>
-      <Text style={styles.subtitleSmall}>
-        (Adjust reps and rir per set in settings)
-      </Text>
     </>
   );
 

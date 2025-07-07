@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from 'react';
 import {
   Keyboard,
   TouchableWithoutFeedback,
@@ -8,7 +8,10 @@ import {
   Button,
   StyleSheet,
   Switch,
+  TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 import { OneRMContext } from '../../context/OneRMContext';
 
@@ -30,6 +33,21 @@ export default function OneRMCalculator() {
 
   const prevUseLbs = useRef(useLbs);
   const isTogglingUnits = useRef(false);
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('QuickTips')}
+          style={{ marginRight: 16 }}
+        >
+          <Ionicons name="help-circle-outline" size={28} color="#007AFF" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   // Recalculate 1RM when inputWeight or reps change
   useEffect(() => {
