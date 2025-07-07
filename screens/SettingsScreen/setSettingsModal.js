@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { OneRMContext } from '../../context/OneRMContext';
 
 export default function SetSettingsModal({ visible, onClose, onSave, initialSettings }) {
   const [settings, setSettings] = useState(
@@ -9,6 +10,8 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
       rir: set.rir.toString(),
     }))
   );
+
+  const { userGoal } = useContext(OneRMContext);
 
   const navigation = useNavigation();
 
@@ -63,8 +66,12 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
       <View style={styles.container}>
         <Text style={styles.title}>Adjust Reps & RIR</Text>
         <Text style={styles.subtitle}>
-          Adjust reps to your preference, RIR is more specific to your goals.
+          Adjust reps to your preference, RIR is more specific to your training focus.
         </Text>
+
+        {userGoal && (
+                            <Text style={styles.currentGoal}>Current Focus: {userGoal}</Text>
+                              )}
 
         <View contentContainerStyle={styles.scrollContainer}>
           {settings.map((set, i) => (
@@ -103,7 +110,7 @@ export default function SetSettingsModal({ visible, onClose, onSave, initialSett
           <Button title="Save" onPress={handleSave} />
         </View>
 
-        <View style={{ marginTop: 10, marginBottom: 20 }}>
+        <View style={{ marginTop: 60, marginBottom: 20 }}>
   <Button title="👋 View App Tips & Guide" onPress={goToSetupHelper} color={'grey'} />
 </View>
 
@@ -185,5 +192,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 30,
     marginBottom: 30,
+  },
+  currentGoal: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#333',
   },
 });
