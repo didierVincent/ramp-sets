@@ -78,14 +78,14 @@ useLayoutEffect(() => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ramp Set Builder</Text>
+      <Text style={styles.title}>Training Focus & Set Layouts</Text>
 
       {userGoal && (
-        <Text style={styles.currentGoal}>Current Goal: {userGoal}</Text>
+        <Text style={styles.currentGoal}>Current Focus: {userGoal}</Text>
       )}
 
       <Button
-        title="Edit Training Focus & Set Layouts"
+        title="Edit Settings"
         onPress={() => setWalkthroughVisible(true)}
         color={'#d9534f'}
       />
@@ -102,7 +102,7 @@ useLayoutEffect(() => {
 
       <View style={styles.resetContainer}>
         <Button
-          title="Reset Goals & Set Tabs"
+          title="Reset All Settings"
           color="#d9534f"
           onPress={handleReset}
         />
@@ -119,7 +119,7 @@ useLayoutEffect(() => {
       {selectedSetCounts.length === 0 && (
         <Text style={styles.subtitleSmall}>
           No set layouts selected yet. 
-          {'\n\n'}Tap "Edit Training Focus & Set Layouts" at the top.
+          {'\n\n'}Tap "Edit Settings" at the top.
         </Text>
       )}
 

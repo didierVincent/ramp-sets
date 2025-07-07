@@ -105,7 +105,7 @@ export default function TwoSetsScreen() {
           <Text style={styles.title}>Ramp Sets</Text>
 
           {userGoal && (
-                  <Text style={styles.currentGoal}>Current Goal: {userGoal}</Text>
+                  <Text style={styles.currentGoal}>Current Focus: {userGoal}</Text>
                 )}
 
           <Text style={styles.label}>Build sets off your 1RM:</Text>
