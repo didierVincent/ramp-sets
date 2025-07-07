@@ -180,7 +180,7 @@ const hybridDefaultSettings = {
       case 'Hypertrophy':
         template = hyperDefaultSettings;
         break;
-      case 'Both (Hybrid)':
+      case 'Hybrid':
         template = hybridDefaultSettings;
         break;
       default:
