@@ -47,7 +47,7 @@ export default function FiveSetsScreen() {
             onPress={() => navigation.navigate('QuickTips')}
             style={{ marginRight: 16 }}
           >
-            <Ionicons name="help-circle-outline" size={28} color="#007AFF" />
+            <Ionicons name="help-circle-outline" size={28} color="#4E52BE" />
           </TouchableOpacity>
         ),
       });

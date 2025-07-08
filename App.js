@@ -17,6 +17,7 @@ import OnboardingScreen from './screens/OnboardingScreen/OnboardingScreen';
 import WalkthroughScreen from './screens/WalkthroughScreen/WalkthroughScreen'; 
 import SetupHelper from './screens/SettingsScreen/SetupHelper';
 import QuickTips from './screens/SettingsScreen/QuickTips';
+import SetSettingsScreen from './screens/SettingsScreen/setSettingsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -58,18 +59,26 @@ function MainTabs({ navigation }) {
 function RootNavigator() {
   const { userGoal, userSetSettings, activeSetScreens } = useContext(OneRMContext);
 
-  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(true);
+  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(null); // null means loading
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const isMissingAll = !userGoal || Object.keys(userSetSettings).length === 0 || activeSetScreens.length === 0;
     setShouldShowOnboarding(isMissingAll);
+    setIsReady(true); // Only show navigator once decision is made
   }, [userGoal, userSetSettings, activeSetScreens]);
+
+  if (!isReady) return null; // Prevents initial flicker
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {shouldShowOnboarding ? (
         <>
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ animation: 'none' }} // disables animation
+          />
           <Stack.Screen name="Walkthrough" component={WalkthroughScreen} />
           <Stack.Screen name="Back" component={MainTabs} />
           <Stack.Screen
@@ -78,45 +87,67 @@ function RootNavigator() {
             options={{ headerShown: true, title: 'Settings' }}
           />
           <Stack.Screen
-          name="SetupHelper"
-          component={SetupHelper}
-          options={{ title: 'Training Tips & Guide', headerShown: true }} // ✅ This enables the back button
+            name="SetupHelper"
+            component={SetupHelper}
+            options={{ title: 'Training Tips & Guide', headerShown: true }}
           />
           <Stack.Screen
-          name="QuickTips"
-          component={QuickTips}
+          name="SetSettings"
+          component={SetSettingsScreen}
           options={{
-            title: 'Quick Tips',
+            presentation: 'modal', // <- key part
+            title: 'Adjust Sets',
             headerShown: true,
           }}
+          />
+          <Stack.Screen
+            name="QuickTips"
+            component={QuickTips}
+            options={{ title: 'Quick Tips', headerStyle: {
+      backgroundColor: '#4E52BE', // Header background
+    }, headerShown: true }}
           />
         </>
       ) : (
         <>
-          <Stack.Screen name="Back" component={MainTabs} />
+          <Stack.Screen
+            name="Back"
+            component={MainTabs}
+            options={{ animation: 'none' }} // disables initial slide
+          />
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}
             options={{ headerShown: true, title: 'Settings' }}
           />
           <Stack.Screen
-          name="SetupHelper"
-          component={SetupHelper}
-          options={{ title: 'Training Tips & Guide', headerShown: true }} // ✅ This enables the back button
+            name="SetupHelper"
+            component={SetupHelper}
+            options={{ title: 'Training Tips & Guide', headerShown: true }}
           />
           <Stack.Screen
-          name="QuickTips"
-          component={QuickTips}
+          name="SetSettings"
+          component={SetSettingsScreen}
           options={{
-          title: 'App Tips & Guide',
-          headerShown: true,
-  }} 
-  />
+            presentation: 'modal', // <- key part
+            title: 'Adjust Sets',
+            headerShown: true,
+          }}
+          />
+
+          <Stack.Screen
+            name="QuickTips"
+            component={QuickTips}
+            options={{ title: 'Quick Tips', headerStyle: {
+      backgroundColor: '#4E52BE', // Header background
+    }, headerShown: true }}
+          />
         </>
       )}
     </Stack.Navigator>
   );
 }
+
 
 export default function App() {
   return (

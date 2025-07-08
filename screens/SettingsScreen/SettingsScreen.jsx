@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect, useLayoutEffect} from 'react';
+import React, { useContext, useState, useEffect, useLayoutEffect } from 'react';
 import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { OneRMContext } from '../../context/OneRMContext';
-import SetSettingsModal from './setSettingsModal';
 import SetBuilderWalkthroughModal from './SetBuilderWalkthroughModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -16,13 +15,9 @@ export default function SettingsScreen() {
     userGoal,
   } = useContext(OneRMContext);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(null);
   const [walkthroughVisible, setWalkthroughVisible] = useState(false);
   const [selectedSetCounts, setSelectedSetCounts] = useState(activeSetScreens || []);
-
-
-
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (activeSetScreens) {
@@ -30,37 +25,18 @@ export default function SettingsScreen() {
     }
   }, [activeSetScreens]);
 
-    const navigation = useNavigation();
-
-
-useLayoutEffect(() => {
-  navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('QuickTips')}
-        style={{ marginRight: 0 }}
-      >
-        <Ionicons name="help-circle-outline" size={28} color="#007AFF" />
-      </TouchableOpacity>
-    ),
-  });
-}, [navigation]);
-
-
-  const openModalFor = (index) => {
-    setCurrentIndex(index);
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setCurrentIndex(null);
-  };
-
-  const saveSettings = (newSettings) => {
-    setSetSettings(currentIndex, newSettings);
-    closeModal();
-  };
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('QuickTips')}
+          style={{ marginRight: 0 }}
+        >
+          <Ionicons name="help-circle-outline" size={28} color="#4E52BE" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const handleWalkthroughComplete = ({ goal, setCounts }) => {
     setWalkthroughVisible(false);
@@ -74,6 +50,15 @@ useLayoutEffect(() => {
   const handleReset = () => {
     resetSettings();
     setSelectedSetCounts([]);
+  };
+
+  const openSetSettings = (index) => {
+    if (userSetSettings && userSetSettings[index]) {
+      navigation.navigate('SetSettings', {
+        index,
+        initialSettings: userSetSettings[index],
+      });
+    }
   };
 
   return (
@@ -108,11 +93,9 @@ useLayoutEffect(() => {
         />
       </View>
 
-     
-
       <View style={styles.divider} />
 
-       <Text style={styles.subtitle}>
+      <Text style={styles.subtitle}>
         If you prefer more control, adjust individual set reps and RIR below.
       </Text>
 
@@ -127,22 +110,11 @@ useLayoutEffect(() => {
         <View key={n} style={styles.buttonContainer}>
           <Button
             title={`Adjust ${n} Sets Layout`}
-            onPress={() => openModalFor(n)}
+            onPress={() => openSetSettings(n)}
             disabled={!userSetSettings || !userSetSettings[n]}
           />
         </View>
       ))}
-
-      
-
-      {currentIndex !== null && userSetSettings && userSetSettings[currentIndex] && (
-        <SetSettingsModal
-          visible={modalVisible}
-          onClose={closeModal}
-          onSave={saveSettings}
-          initialSettings={userSetSettings[currentIndex]}
-        />
-      )}
     </View>
   );
 }

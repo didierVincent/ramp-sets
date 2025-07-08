@@ -96,39 +96,44 @@ export default function QuickTips({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    backgroundColor: '#fff',
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+    backgroundColor: '#0D0106', // dark base background
     flexGrow: 1,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 0,
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#4E52BE', // bright highlight
+    marginBottom: 12,
     textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    marginTop: 24,
-    marginBottom: 12,
+    fontWeight: '700',
+    color: '#4E52BE', // strong header
+    marginTop: 8,
+    marginBottom: 10,
   },
   body: {
     fontSize: 15,
-    color: '#444',
+    color: '#EEE', // light text on dark
+    lineHeight: 22,
   },
   divider: {
     height: 1,
-    backgroundColor: '#ccc',
-    marginVertical: 25,
+    backgroundColor: '#6F69A2',
+    opacity: 0.4,
+    marginVertical: 16,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 30,
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: '#1c1b22',
     borderRadius: 12,
     padding: 20,
     maxHeight: '80%',
@@ -136,6 +141,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
+    color: '#934173',
     textAlign: 'center',
     marginBottom: 10,
   },
