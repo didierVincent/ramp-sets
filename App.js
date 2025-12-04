@@ -63,7 +63,7 @@ function RootNavigator() {
   const { userGoal, userSetSettings, activeSetScreens } = useContext(OneRMContext);
 
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(null); // null means loading
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(true);
 
   useEffect(() => {
     const isMissingAll = !userGoal || Object.keys(userSetSettings).length === 0 || activeSetScreens.length === 0;
