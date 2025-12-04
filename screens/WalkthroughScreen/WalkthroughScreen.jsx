@@ -1,156 +1,143 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { OneRMContext } from '../../context/OneRMContext';
 
+const LAYOUTS = [
+  {
+    key: 'hybrid-3',
+    title: 'Strength & Size: 3-Set',
+    desc: 'Heavy top set with back-off sets. Ideal for fast strength and muscle gains with balanced fatigue. Best for compounds and moderate-effort accessories.',
+  },
+  {
+    key: 'hypertrophy-2',
+    title: 'Muscle Growth: 2-Set',
+    desc: 'Straight sets near failure. Emphasises high mechanical tension, best for isolation lifts, managing fatigue, and packing in effective volume efficiently.',
+  },
+  {
+    key: 'hypertrophy-3',
+    title: 'Muscle Growth: 3-Set',
+    desc: 'More set volume for a stronger hypertrophy stimulus, best for when fatigue is less of a concern.',
+  },
+  {
+    key: 'hybrid-2',
+    title: 'Strength & Size: 2-Set',
+    desc: 'Heavy top set & back-off set structure. Quick for effective strength and size development.',
+  },
+  {
+    key: 'strength-5',
+    title: 'Max Strength: 5-Set',
+    desc: 'Multiple heavy sets with minimum fatigue to drive neural gains, bar speed, and movement proficiency. Ideal for refining skill under load and building top-end strength.',
+  },
+];
+
+
 export default function WalkthroughScreen({ navigation }) {
-  const { applyDefaultSettings, setUserGoal, setActiveSetScreens } = useContext(OneRMContext);
+  const { setActiveSetScreens } = useContext(OneRMContext);
 
   const [step, setStep] = useState(1);
-  const [goal, setGoal] = useState(null);
-  const [setCounts, setSetCounts] = useState([]);
+  const [selectedLayouts, setSelectedLayouts] = useState([]);
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handleBack = () => setStep((prev) => prev - 1);
-
-  const handleComplete = () => {
-    setUserGoal(goal);
-    setActiveSetScreens(setCounts.sort((a, b) => a - b));
-    applyDefaultSettings(goal, setCounts);
-    navigation.replace('Back'); // Go to main app
+  const toggleLayout = (key) => {
+    const newList = selectedLayouts.includes(key)
+      ? selectedLayouts.filter((k) => k !== key)
+      : [...selectedLayouts, key];
+    setSelectedLayouts(newList);
   };
 
-  const toggleSetCount = (count) => {
-    const isSelected = setCounts.includes(count);
-    let newSetCounts;
-    if (isSelected) {
-      newSetCounts = setCounts.filter((c) => c !== count);
-    } else {
-      newSetCounts = [...setCounts, count];
+  const handleComplete = async () => {
+    setActiveSetScreens(selectedLayouts);
+    try {
+      await AsyncStorage.setItem('ACTIVE_SET_SCREENS', JSON.stringify(selectedLayouts));
+    } catch (err) {
+      console.warn('Failed to save selected screens:', err);
     }
-    setSetCounts(newSetCounts.sort((a, b) => a - b));
+    navigation.replace('Back'); // Replace with your main app screen
   };
 
-const renderGoalStep = () => (
+  const renderIntroStep = () => (
     <>
-      <Text style={styles.title}>What's your training focus?</Text>
+      <Text style={styles.title}>Welcome to Ramp Sets</Text>
       <Text style={styles.subtitle}>
-        We'll auto-build your sets accordingly.
-        </Text>
-        <Text style={styles.subtitleSmall}>
-        You can fine-tune reps and RIR later.
+        This app helps you select optimal loads, reps and effort using scientifically validated methods.
       </Text>
-        {/* <Text style={styles.subtitleSmall}>
-        Differences in reps & proximity to failure (RIR)
-      </Text> */}
-      <TouchableOpacity
-  style={[styles.option, goal === 'Strength' && styles.selectedOption]}
-  onPress={() => setGoal('Strength')}
-  activeOpacity={0.7}
->
-  <Text style={[styles.optionText, goal === 'Strength' && styles.selectedText]}>
-    Strength
-  </Text>
-  <Text style={[styles.option, styles.middleDesc, goal === 'Strength' && styles.selectedText]}>
-    Low reps (3–6) with less fatigue for maximum force development.
-    </Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  style={[styles.option, goal === 'Hypertrophy' && styles.selectedOption]}
-  onPress={() => setGoal('Hypertrophy')}
-  activeOpacity={0.7}
->
-  <Text style={[styles.optionText, goal === 'Hypertrophy' && styles.selectedText]}>
-    Hypertrophy
-  </Text>
-  <Text style={[styles.option, styles.middleDesc, goal === 'Hypertrophy' && styles.selectedText]}>
-    Moderate reps (5–8), near failure to maximise muscle growth.
-    </Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  style={[styles.option, goal === 'Hybrid' && styles.selectedOption]}
-  onPress={() => setGoal('Hybrid')}
-  activeOpacity={0.7}
->
-  <Text style={[styles.optionText, goal === 'Hybrid' && styles.selectedText]}>
-    Hybrid
-  </Text>
-  <Text style={[styles.option, styles.middleDesc, goal === 'Hybrid' && styles.selectedText]}>
-    Blend of strength and size using varied reps (3–8) and fatigue.
-    </Text>
-</TouchableOpacity>
-
+      <Text style={styles.subtitleSmall}>
+        You’ll choose a few preset set layouts now — you can customize them later.
+      </Text>
       <View style={styles.navRow}>
         <View />
-        <Button title="Next" disabled={!goal} onPress={handleNext} color="#007AFF" />
+        <Button title="Next" onPress={() => setStep(2)} color="#007AFF" />
       </View>
     </>
   );
 
-  const renderSetCountStep = () => (
-      <>
-        <Text style={styles.title}>Choose your set layouts.</Text>
-        <Text style={styles.subtitle}>
-          How many sets do you usually train with?
-          </Text>
-          <Text style={styles.subtitleSmall}>
-          Set-up multiple layouts to switch between.
-        </Text>
-        {[2, 3, 4, 5].map((count) => {
-          const isSelected = setCounts.includes(count);
+  const renderSelectLayoutsStep = () => (
+  <>
+    <Text style={styles.title}>Choose Your Set Screens</Text>
+    <Text style={styles.subtitle}>You can always add or edit later.</Text>
+
+    <View style={styles.scrollContainer}>
+      <ScrollView
+        style={styles.scrollInner}
+        contentContainerStyle={{ padding: 8, paddingBottom: 24 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {LAYOUTS.map(({ key, title, desc }) => {
+          const isSelected = selectedLayouts.includes(key);
           return (
             <TouchableOpacity
-              key={count}
+              key={key}
               style={[styles.option, isSelected && styles.selectedOption]}
-              onPress={() => toggleSetCount(count)}
+              onPress={() => toggleLayout(key)}
               activeOpacity={0.7}
             >
               <Text style={[styles.optionText, isSelected && styles.selectedText]}>
-                {count} Sets
+                {title}
               </Text>
+              <Text style={styles.middleDesc}>{desc}</Text>
             </TouchableOpacity>
           );
         })}
-        <View style={styles.navRow}>
-          <Button title="Back" onPress={handleBack} color="#007AFF" />
-          <Button
-            title="Next"
-            disabled={setCounts.length === 0}
-            onPress={handleNext}
-            color="#007AFF"
-          />
-        </View>
-      </>
-    );
+      </ScrollView>
+    </View>
 
-    const renderCustomizeStep = () => (
-        <>
-          <Text style={styles.title2}>Done!</Text>
-                <Text style={styles.subtitle}>
-                  Don't waste time figuring out how heavy, how many reps or how hard to push yourself anymore.
-                  </Text>
-                  <Text style={styles.subtitleSmall}>
-                  {'\n'}More info on how to use the app inside.
-                </Text>
-            
-          <View style={[styles.navRow, { justifyContent: 'space-around' }]}>
-            <Button title="Back" onPress={handleBack} color="#007AFF" />
-            <Button title="Save" onPress={handleComplete} color="#007AFF" />
-          </View>
-        </>
-      );
+    <View style={styles.navRow}>
+      <Button title="Back" onPress={() => setStep(1)} color="#007AFF" />
+      <Button
+        title="Next"
+        onPress={() => setStep(3)}
+        disabled={selectedLayouts.length === 0}
+        color="#007AFF"
+      />
+    </View>
+  </>
+);
+
+
+  const renderDoneStep = () => (
+    <>
+      <Text style={styles.title2}>You're all set!</Text>
+      <Text style={styles.subtitle}>
+        Your selected screens are saved. You can customize loads, reps and RIR inside the app at any time.
+      </Text>
+      <Text style={styles.subtitleSmall}>Train smarter, not just harder.</Text>
+      <View style={styles.navRow}>
+        <Button title="Back" onPress={() => setStep(2)} color="#007AFF" />
+        <Button title="Finish" onPress={handleComplete} color="#007AFF" />
+      </View>
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {step === 1 && renderGoalStep()}
-        {step === 2 && renderSetCountStep()}
-        {step === 3 && renderCustomizeStep()}
+        {step === 1 && renderIntroStep()}
+        {step === 2 && renderSelectLayoutsStep()}
+        {step === 3 && renderDoneStep()}
       </View>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   content: {
@@ -230,10 +217,28 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     color: '#999',
-    marginVertical: 8,
+    marginVertical: 4,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     textAlign: 'center',
   },
+  scrollContainer: {
+  maxHeight: 450,
+  borderWidth: 2,
+  borderColor: '#ddd',
+  borderRadius: 12,
+  backgroundColor: '#fff',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 4,
+  marginBottom: 20,
+},
+
+scrollInner: {
+  borderRadius: 12,
+},
+
 });

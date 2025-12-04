@@ -104,6 +104,49 @@ export default function OneRMCalculator() {
     });
   };
 
+const renderPercentTable = () => {
+  const value70 = useLbs ? convertToLbs(rawOneRM * 0.7) : rawOneRM * 0.7;
+  const value77_5 = useLbs ? convertToLbs(rawOneRM * 0.775) : rawOneRM * 0.775;
+  const value85 = useLbs ? convertToLbs(rawOneRM * 0.85) : rawOneRM * 0.85;
+
+  return (
+    <>
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>5x5</Text>
+        <Text style={styles.percentValue}>
+          {value70.toFixed(0)} {getUnitLabel()}
+        </Text>
+        <Text style={styles.percentDetail}>
+        (70%)
+        </Text>
+      </View>
+
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>4x4</Text>
+        <Text style={styles.percentValue}>
+          {value77_5.toFixed(0)} {getUnitLabel()} 
+        </Text>
+        <Text style={styles.percentDetail}>
+        (77.5%)
+        </Text>
+      </View>
+
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>3x3</Text>
+        <Text style={styles.percentValue}>
+          {value85.toFixed(0)} {getUnitLabel()}
+        </Text>
+        <Text style={styles.percentDetail}>
+          (85%)
+        </Text>
+      </View>
+    </>
+  );
+};
+
+
+
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
@@ -150,6 +193,15 @@ export default function OneRMCalculator() {
         </View>
 
         {rawOneRM > 0 && <View style={styles.rmGrid}>{renderRMGrid()}</View>}
+        {rawOneRM > 0 && (
+  <View style={{ marginTop: 8 }}>
+    <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 6, textAlign: 'center' }}>
+      SBD Load Guide
+    </Text>
+    <View style={styles.percentTable}>{renderPercentTable()}</View>
+  </View>
+)}
+
       </View>
     </TouchableWithoutFeedback>
   );
@@ -157,67 +209,89 @@ export default function OneRMCalculator() {
 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: '#fff' },
-  title: { textAlign: 'center', fontSize: 24, fontWeight: 'bold', marginTop: 10 },
+  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  title: { textAlign: 'center', fontSize: 22, fontWeight: 'bold', marginTop: 8 },
   resultBox: {
-    marginTop: 40,
+    marginTop: 24,
     alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: '#f1f1f1',
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ccc',
-    minWidth: 200,
+    minWidth: 180,
   },
   resultRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  resultLabel: { fontSize: 20, fontWeight: 'bold', color: '#444', marginRight: 10 },
-  resultValue: { fontSize: 20, fontWeight: '600', color: '#222' },
+  resultLabel: { fontSize: 18, fontWeight: 'bold', color: '#444', marginRight: 8 },
+  resultValue: { fontSize: 18, fontWeight: '600', color: '#222' },
   sentenceInput: {
-    marginTop: 30,
+    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
   },
-  staticText: { fontSize: 18, marginHorizontal: 4 },
+  staticText: { fontSize: 16, marginHorizontal: 3 },
   inlineInput: {
     borderBottomWidth: 1,
     borderColor: '#888',
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    fontSize: 18,
-    minWidth: 60,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    fontSize: 16,
+    minWidth: 50,
     textAlign: 'center',
   },
   actionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
-    paddingHorizontal: 20,
+    marginTop: 12,
+    paddingHorizontal: 12,
   },
   toggleInline: { flexDirection: 'row', alignItems: 'center' },
-  toggleLabel: { fontSize: 16, marginRight: 6 },
+  toggleLabel: { fontSize: 14, marginRight: 4 },
   rmGrid: {
-    marginTop: 16,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  gridBox: {
-    width: '40%',
-    minWidth: 140,
-    marginHorizontal: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    backgroundColor: '#eef3f7',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#bbb',
-    alignItems: 'center',
-  },
-  gridLabel: { fontSize: 16, fontWeight: '600', color: '#444', marginBottom: 2 },
-  gridValue: { fontSize: 16, fontWeight: '500', color: '#222' },
+  marginTop: 12,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between', // distribute evenly
+  gap: 2,
+},
+gridBox: {
+  width: '32%',       // roughly 3 per row
+  minWidth: 100,        // remove minWidth to allow compact layout
+  marginVertical: 6,  // smaller vertical spacing
+  paddingVertical: 8, // smaller padding inside box
+  paddingHorizontal: 2,
+  backgroundColor: '#eef3f7',
+  borderRadius: 6,
+  borderWidth: 1,
+  borderColor: '#bbb',
+  alignItems: 'center',
+},
+gridLabel: { fontSize: 14, fontWeight: '600', color: '#444', marginBottom: 1 },
+gridValue: { fontSize: 16, fontWeight: '500', color: '#222' },
+
   actionsCol: { flex: 1 },
+  percentTable: {
+  alignSelf: 'center',          // center the table and shrink to content
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: '#f9f9f9',
+},
+
+  percentRow: {
+  flexDirection: 'row',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  paddingVertical: 4,       // row takes full width of its container
+},
+
+  percentLabel: { fontSize: 16, fontWeight: '500', color: '#444' },
+  percentValue: { marginLeft: 8, fontSize: 16, fontWeight: '600', color: '#222' },
+  percentDetail: { marginLeft: 8, fontSize: 14, fontWeight: '400', color: '#333' },
 });
+

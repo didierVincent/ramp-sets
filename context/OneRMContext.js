@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const OneRMContext = createContext();
 
 const USER_SETTINGS_KEY = 'userSetSettings';
-const USER_GOAL_KEY = 'userGoal';
 const ACTIVE_SET_SCREENS_KEY = 'activeSetScreens';
 const BODYWEIGHT_KEY = 'bodyweight';
 
@@ -29,9 +28,7 @@ export const OneRMProvider = ({ children }) => {
   }
 };
 
-
   // Persisted user goal and sets state
-  const [userGoal, setUserGoal] = useState(null);
   const [userSetSettings, setUserSetSettings] = useState(null);
   const [activeSetScreens, setActiveSetScreens] = useState([]); // default visible sets
 
@@ -85,38 +82,11 @@ export const OneRMProvider = ({ children }) => {
     setUseLbs((prev) => !prev);
   };
 
-  // 🧱 Default user set settings
-  // const defaultSettings = {
-  //   2: [
-  //     { reps: 8, rir: 2 },
-  //     { reps: 6, rir: 0 },
-  //   ],
-  //   3: [
-  //     { reps: 7, rir: 3 },
-  //     { reps: 6, rir: 2 },
-  //     { reps: 5, rir: 0 },
-  //   ],
-  //   4: [
-  //     { reps: 8, rir: 4 },
-  //     { reps: 7, rir: 3 },
-  //     { reps: 6, rir: 1 },
-  //     { reps: 5, rir: 0 },
-  //   ],
-  //   5: [
-  //     { reps: 8, rir: 4 },
-  //     { reps: 7, rir: 3 },
-  //     { reps: 6, rir: 2 },
-  //     { reps: 5, rir: 1 },
-  //     { reps: 5, rir: 0 },
-  //   ],
-  // };
-
-  // Load all persisted settings on mount
+ 
   useEffect(() => {
     const loadAllSettings = async () => {
       try {
         const storedSettings = await AsyncStorage.getItem(USER_SETTINGS_KEY);
-        const storedGoal = await AsyncStorage.getItem(USER_GOAL_KEY);
         const storedActiveSets = await AsyncStorage.getItem(ACTIVE_SET_SCREENS_KEY);
         const storedBodyweight = await AsyncStorage.getItem(BODYWEIGHT_KEY);
 
@@ -124,10 +94,6 @@ export const OneRMProvider = ({ children }) => {
           setUserSetSettings(JSON.parse(storedSettings));
         } else {
           setUserSetSettings(hyperDefaultSettings);
-        }
-
-        if (storedGoal) {
-          setUserGoal(storedGoal);
         }
 
         if (storedActiveSets) {
@@ -170,48 +136,6 @@ const hybridDefaultSettings = {
 };
 
 
-  // Apply default sets for given goal & set counts, persist them all
-  const applyDefaultSettings = async (goal, selectedSetCounts) => {
-    let template = null;
-    switch (goal) {
-      case 'Strength':
-        template = strengthDefaultSettings;
-        break;
-      case 'Hypertrophy':
-        template = hyperDefaultSettings;
-        break;
-      case 'Hybrid':
-        template = hybridDefaultSettings;
-        break;
-      default:
-        return;
-    }
-
-    const newSettings = {};
-    selectedSetCounts.forEach((count) => {
-      if (template[count]) {
-        newSettings[count] = template[count];
-      }
-    });
-
-    const updatedSettings = {
-      ...userSetSettings,
-      ...newSettings,
-    };
-
-    setUserSetSettings(updatedSettings);
-    setActiveSetScreens(selectedSetCounts);
-    setUserGoal(goal);
-
-    try {
-      await AsyncStorage.setItem(USER_SETTINGS_KEY, JSON.stringify(updatedSettings));
-      await AsyncStorage.setItem(USER_GOAL_KEY, goal);
-      await AsyncStorage.setItem(ACTIVE_SET_SCREENS_KEY, JSON.stringify(selectedSetCounts));
-    } catch (err) {
-      console.warn('Failed to save user settings:', err);
-    }
-  };
-
   // Save individual set settings changes (per setCount)
   const setSetSettings = async (setCount, newSettings) => {
     const updated = {
@@ -231,12 +155,10 @@ const hybridDefaultSettings = {
   // Reset all settings and clear AsyncStorage
   const resetSettings = async () => {
     setUserSetSettings(hyperDefaultSettings);
-    setUserGoal(null);
     setActiveSetScreens([]);
 
     try {
       await AsyncStorage.removeItem(USER_SETTINGS_KEY);
-      await AsyncStorage.removeItem(USER_GOAL_KEY);
       await AsyncStorage.removeItem(ACTIVE_SET_SCREENS_KEY);
     } catch (err) {
       console.warn('Failed to reset user settings:', err);
@@ -283,13 +205,15 @@ const hybridDefaultSettings = {
         parseToKg,
         toggleUnits,
 
+        // Presets
+        hyperDefaultSettings,
+        strengthDefaultSettings,
+        hybridDefaultSettings,
+        
         // Settings
-        userGoal,
-        setUserGoal,
         userSetSettings,
         setSetSettings,
         resetSettings,
-        applyDefaultSettings,
         activeSetScreens,
         setActiveSetScreens,
 

@@ -19,6 +19,8 @@ import SetupHelper from './screens/SettingsScreen/SetupHelper';
 import QuickTips from './screens/SettingsScreen/QuickTips';
 import SetSettingsScreen from './screens/SettingsScreen/setSettingsScreen';
 
+import HyperTwoSetScreen from './screens/HyperTwoSetScreen/HyperTwoSetScreen';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +42,7 @@ function MainTabs({ navigation }) {
   return (
     <Tab.Navigator>
       <Tab.Screen name="1RM Calc" component={OneRMCalculator} options={withSettingsIcon('1RM Calc')} />
+      {/* <Tab.Screen name="Hyp-2" component={HyperTwoSetScreen} options={withSettingsIcon('Hyp-2')}/> */}
       {activeSetScreens.includes(2) && (
         <Tab.Screen name="2 Sets" component={TwoSetsScreen} options={withSettingsIcon('2 Sets')} />
       )}

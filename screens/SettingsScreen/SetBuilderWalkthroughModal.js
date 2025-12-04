@@ -71,7 +71,7 @@ export default function SetBuilderWalkthroughModal({
     Strength
   </Text>
   <Text style={[styles.option, styles.middleDesc, goal === 'Strength' && styles.selectedText]}>
-    Low reps (3–6) with less fatigue for maximum force development.
+    Heavy reps (3–5) with less fatigue for maximum force development.
     </Text>
 </TouchableOpacity>
 
@@ -84,7 +84,7 @@ export default function SetBuilderWalkthroughModal({
     Hypertrophy
   </Text>
   <Text style={[styles.option, styles.middleDesc, goal === 'Hypertrophy' && styles.selectedText]}>
-    Moderate reps (5–8), near failure to maximise muscle growth.
+    Straight sets (5-8 reps) close to failure to maximise muscle growth.
     </Text>
 </TouchableOpacity>
 
@@ -94,10 +94,10 @@ export default function SetBuilderWalkthroughModal({
   activeOpacity={0.7}
 >
   <Text style={[styles.optionText, goal === 'Hybrid' && styles.selectedText]}>
-    Hybrid
+    Hybrid (Reverse Pyramid)
   </Text>
   <Text style={[styles.option, styles.middleDesc, goal === 'Hybrid' && styles.selectedText]}>
-    Blend of strength and size using varied reps (3–8) and fatigue.
+    Heavy top set (3–5) for strength, with backoff sets (5–8) for muscle growth. 
     </Text>
 </TouchableOpacity>
 
