@@ -194,8 +194,8 @@ const renderPercentTable = () => {
 
         {rawOneRM > 0 && <View style={styles.rmGrid}>{renderRMGrid()}</View>}
         {rawOneRM > 0 && (
-  <View style={{ marginTop: 8 }}>
-    <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 6, textAlign: 'center' }}>
+  <View style={{ marginTop: 24 }}>
+    <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 12, textAlign: 'center' }}>
       SBD Load Guide
     </Text>
     <View style={styles.percentTable}>{renderPercentTable()}</View>
@@ -209,8 +209,8 @@ const renderPercentTable = () => {
 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { textAlign: 'center', fontSize: 22, fontWeight: 'bold', marginTop: 8 },
+  container: { flex: 1, padding: 22, backgroundColor: '#fff' },
+  title: { textAlign: 'center', fontSize: 24, fontWeight: 'bold', marginTop: 8 },
   resultBox: {
     marginTop: 24,
     alignSelf: 'center',
@@ -223,23 +223,24 @@ const styles = StyleSheet.create({
     minWidth: 180,
   },
   resultRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  resultLabel: { fontSize: 18, fontWeight: 'bold', color: '#444', marginRight: 8 },
-  resultValue: { fontSize: 18, fontWeight: '600', color: '#222' },
+  resultLabel: { fontSize: 20, fontWeight: 'bold', color: '#444', marginRight: 4 },
+  resultValue: { fontSize: 20, fontWeight: '600', color: '#222' },
   sentenceInput: {
-    marginTop: 20,
+    marginTop: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
   },
-  staticText: { fontSize: 16, marginHorizontal: 3 },
+  staticText: { fontSize: 18, marginHorizontal: 4 },
   inlineInput: {
     borderBottomWidth: 1,
     borderColor: '#888',
     paddingHorizontal: 4,
     paddingVertical: 2,
-    fontSize: 16,
-    minWidth: 50,
+    fontSize: 18,
+    minWidth: 60,
+    minHeight: 30,
     textAlign: 'center',
   },
   actionsRow: {
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   toggleInline: { flexDirection: 'row', alignItems: 'center' },
-  toggleLabel: { fontSize: 14, marginRight: 4 },
+  toggleLabel: { fontSize: 16, marginRight: 10 },
   rmGrid: {
   marginTop: 12,
   flexDirection: 'row',
@@ -291,7 +292,7 @@ gridValue: { fontSize: 16, fontWeight: '500', color: '#222' },
 },
 
   percentLabel: { fontSize: 16, fontWeight: '500', color: '#444' },
-  percentValue: { marginLeft: 8, fontSize: 16, fontWeight: '600', color: '#222' },
-  percentDetail: { marginLeft: 8, fontSize: 14, fontWeight: '400', color: '#333' },
+  percentValue: { marginLeft: 8, fontSize: 18, fontWeight: '600', color: '#222' },
+  percentDetail: { marginLeft: 8, fontSize: 16, fontWeight: '400', color: '#333' },
 });
 
