@@ -105,41 +105,77 @@ export default function OneRMCalculator() {
   };
 
 const renderPercentTable = () => {
-  const value70 = useLbs ? convertToLbs(rawOneRM * 0.7) : rawOneRM * 0.7;
+  const value75 = useLbs ? convertToLbs(rawOneRM * 0.75) : rawOneRM * 0.75;
   const value77_5 = useLbs ? convertToLbs(rawOneRM * 0.775) : rawOneRM * 0.775;
+  const value80 = useLbs ? convertToLbs(rawOneRM * 0.80) : rawOneRM * 0.80;
+  const value82 = useLbs ? convertToLbs(rawOneRM * 0.82) : rawOneRM * 0.82;
   const value85 = useLbs ? convertToLbs(rawOneRM * 0.85) : rawOneRM * 0.85;
+  const value92_5 = useLbs ? convertToLbs(rawOneRM * 0.925) : rawOneRM * 0.925;
 
   return (
     <>
-      <View style={styles.percentRow}>
-        <Text style={styles.percentLabel}>5x5</Text>
+
+    <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>Main Strength</Text>
         <Text style={styles.percentValue}>
-          {value70.toFixed(0)} {getUnitLabel()}
+          {value82.toFixed(0)} {getUnitLabel()} 
         </Text>
         <Text style={styles.percentDetail}>
-        (70%)
+        (82%) 7RM @ RIR 2
         </Text>
       </View>
 
-      <View style={styles.percentRow}>
-        <Text style={styles.percentLabel}>4x4</Text>
+ <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>Hypertrophy</Text>
         <Text style={styles.percentValue}>
           {value77_5.toFixed(0)} {getUnitLabel()} 
         </Text>
         <Text style={styles.percentDetail}>
-        (77.5%)
+        (77.5%) 9RM @ RIR 1
+        </Text>
+      </View>
+      
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>Heavy Single</Text>
+        <Text style={styles.percentValue}>
+          {value92_5.toFixed(0)} {getUnitLabel()} 
+        </Text>
+        <Text style={styles.percentDetail}>
+        (92.5%) 3RM @ RIR 2
         </Text>
       </View>
 
       <View style={styles.percentRow}>
-        <Text style={styles.percentLabel}>3x3</Text>
+        <Text style={styles.percentLabel}>Triples / Grip</Text>
         <Text style={styles.percentValue}>
-          {value85.toFixed(0)} {getUnitLabel()}
+          {value85.toFixed(0)} {getUnitLabel()} 
         </Text>
         <Text style={styles.percentDetail}>
-          (85%)
+        (85%) 5RM @ RIR 2
         </Text>
       </View>
+
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>Heavy Fours</Text>
+        <Text style={styles.percentValue}>
+          {value80.toFixed(0)} {getUnitLabel()} 
+        </Text>
+        <Text style={styles.percentDetail}>
+        (80%) 8RM @ RIR 4
+        </Text>
+      </View>
+    
+      <View style={styles.percentRow}>
+        <Text style={styles.percentLabel}>Heavy Fives</Text>
+        <Text style={styles.percentValue}>
+          {value75.toFixed(0)} {getUnitLabel()}
+        </Text>
+        <Text style={styles.percentDetail}>
+        (75%) 10RM @ RIR 5
+        </Text>
+      </View>
+
+    
     </>
   );
 };
@@ -194,10 +230,7 @@ const renderPercentTable = () => {
 
         {rawOneRM > 0 && <View style={styles.rmGrid}>{renderRMGrid()}</View>}
         {rawOneRM > 0 && (
-  <View style={{ marginTop: 24 }}>
-    <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 12, textAlign: 'center' }}>
-      SBD Load Guide
-    </Text>
+  <View style={{ marginTop: 4 }}>
     <View style={styles.percentTable}>{renderPercentTable()}</View>
   </View>
 )}
@@ -252,7 +285,7 @@ const styles = StyleSheet.create({
   toggleInline: { flexDirection: 'row', alignItems: 'center' },
   toggleLabel: { fontSize: 16, marginRight: 10 },
   rmGrid: {
-  marginTop: 12,
+  marginTop: 0,
   flexDirection: 'row',
   flexWrap: 'wrap',
   justifyContent: 'space-between', // distribute evenly
@@ -291,8 +324,8 @@ gridValue: { fontSize: 16, fontWeight: '500', color: '#222' },
   paddingVertical: 4,       // row takes full width of its container
 },
 
-  percentLabel: { fontSize: 16, fontWeight: '500', color: '#444' },
-  percentValue: { marginLeft: 8, fontSize: 18, fontWeight: '600', color: '#222' },
-  percentDetail: { marginLeft: 8, fontSize: 16, fontWeight: '400', color: '#333' },
+  percentLabel: { fontSize: 15.5, fontWeight: '500', color: '#444' },
+  percentValue: { marginLeft: 8, fontSize: 15.5, fontWeight: '600', color: '#222' },
+  percentDetail: { marginLeft: 8, fontSize: 15.5, fontWeight: '400', color: '#333' },
 });
 
