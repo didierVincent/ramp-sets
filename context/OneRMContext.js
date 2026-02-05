@@ -45,12 +45,15 @@ export const OneRMProvider = ({ children }) => {
     return useLbs ? convertToLbs(num).toFixed(0) : num.toFixed(0);
   };
 
-  const calculate1RM = (weight, reps) => {
-    if (weight > 0 && reps > 0) {
-      return reps === 1 ? weight : weight * (1 + reps / 30);
-    }
-    return 0;
-  };
+ const calculate1RM = (weight, reps) => {
+  if (weight > 0 && reps > 0) {
+    return reps === 1
+      ? weight
+      : (weight * 36) / (37 - reps); // Brzycki formula (used to be Epley)
+  }
+  return 0;
+};
+
 
   const calculateLoadFrom1RM = (oneRM, reps) => {
     if (oneRM <= 0 || reps <= 0) return 0;

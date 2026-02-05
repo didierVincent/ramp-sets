@@ -89,7 +89,7 @@ export default function OneRMCalculator() {
   const renderRMGrid = () => {
     return [...Array(9)].map((_, i) => {
       const repsCount = i + 2;
-      const estKg = rawOneRM / (1 + repsCount / 30);
+      const estKg = rawOneRM * (37 - repsCount) / 36; // Brzycki formula (used to be Epley), same as Hevy app
       const display = useLbs
         ? convertToLbs(estKg).toFixed(0)
         : estKg.toFixed(0);
